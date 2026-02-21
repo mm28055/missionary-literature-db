@@ -1,0 +1,58 @@
+/* ---- About Page ---- */
+
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.about-header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+}
+
+.about-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+}
+
+.about-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.about-section {
+    margin-bottom: var(--space-3xl);
+}
+
+.about-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-lg);
+    color: var(--accent-gold);
+}
+
+.about-section p {
+    font-size: 1rem;
+    color: var(--text-primary);
+    line-height: 1.9;
+}
+
+.about-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.about-section ul li {
+    padding: var(--space-sm) 0;
+    padding-left: var(--space-lg);
+    position: relative;
+    color: var(--text-primary);
+    line-height: 1.7;
+}
+
+.about-section ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent-gold-dim);
+}
