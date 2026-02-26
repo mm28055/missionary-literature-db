@@ -82,6 +82,12 @@
 /* Parent theme group */
 .themeGroup {
     margin-bottom: 2px;
+    padding-bottom: 2px;
+}
+
+.themeGroup+.themeGroup {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 2px;
 }
 
 .parentRow {
@@ -97,7 +103,20 @@
 }
 
 .parentRowActive {
-    background: rgba(184, 132, 58, 0.06);
+    background: rgba(184, 132, 58, 0.08);
+    position: relative;
+}
+
+/* gold active indicator bar */
+.parentRowActive::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--accent-gold);
 }
 
 .parentRowActive .parentNumeral {
@@ -175,12 +194,14 @@
 }
 
 .childCount {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    background: rgba(0, 0, 0, 0.04);
-    padding: 0px 5px;
-    border-radius: 8px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--accent-gold-dim);
+    background: rgba(184, 132, 58, 0.08);
+    padding: 1px 7px;
+    border-radius: 100px;
+    min-width: 20px;
+    text-align: center;
 }
 
 /* Sub-theme list */
