@@ -51,6 +51,12 @@ export default async function AdminPage() {
             icon: '🔗',
             href: '/admin/links',
         },
+        {
+            title: 'Pages',
+            description: 'Edit site pages (About, etc.)',
+            icon: '📝',
+            href: '/admin/pages',
+        },
     ];
 
     return (

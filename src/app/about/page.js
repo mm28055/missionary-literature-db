@@ -1,71 +1,82 @@
+import { createClient } from '@/lib/supabase/server';
 import styles from './about.module.css';
 
-export const metadata = {
-    title: 'About — Missionary Literature Database',
-    description: 'Learn about the Missionary Literature Database project, its goals, methodology, and scope.',
-};
+export const dynamic = 'force-dynamic';
 
-export default function AboutPage() {
+export async function generateMetadata() {
+    const supabase = await createClient();
+    const { data: page } = await supabase
+        .from('site_pages')
+        .select('title, meta_description')
+        .eq('slug', 'about')
+        .single();
+
+    return {
+        title: `${page?.title || 'About'} — Missionary Literature Database`,
+        description: page?.meta_description || 'Learn about the Missionary Literature Database project.',
+    };
+}
+
+// Simple markdown-like renderer for headings, bullets, and paragraphs
+function renderContent(content) {
+    if (!content) return null;
+
+    const lines = content.split('\n');
+    const elements = [];
+    let currentList = [];
+    let key = 0;
+
+    const flushList = () => {
+        if (currentList.length > 0) {
+            elements.push(
+                <ul key={`list-${key++}`}>
+                    {currentList.map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
+            );
+            currentList = [];
+        }
+    };
+
+    for (const line of lines) {
+        const trimmed = line.trim();
+
+        if (trimmed.startsWith('## ')) {
+            flushList();
+            elements.push(<h2 key={`h-${key++}`}>{trimmed.slice(3)}</h2>);
+        } else if (trimmed.startsWith('- ')) {
+            currentList.push(trimmed.slice(2));
+        } else if (trimmed === '') {
+            flushList();
+        } else {
+            flushList();
+            elements.push(<p key={`p-${key++}`}>{trimmed}</p>);
+        }
+    }
+    flushList();
+    return elements;
+}
+
+export default async function AboutPage() {
+    const supabase = await createClient();
+    const { data: page } = await supabase
+        .from('site_pages')
+        .select('*')
+        .eq('slug', 'about')
+        .single();
+
+    const title = page?.title || 'About This Project';
+    const content = page?.content || '';
+
     return (
         <div className="page-content">
             <div className={`container ${styles['about-content']}`}>
                 <div className={`${styles['about-header']} animate-fade-in`}>
-                    <h1>About This Project</h1>
-                    <p>
-                        The Missionary Literature Database is a digital humanities project that
-                        creates a searchable archive of 19th-century Christian missionary writings
-                        about India and Hinduism.
-                    </p>
+                    <h1>{title}</h1>
                 </div>
 
-                <section className={styles['about-section']}>
-                    <h2>Purpose</h2>
-                    <p>
-                        During the 19th century, Christian missionaries from various denominations
-                        produced an enormous body of literature about India — its religions, customs,
-                        social structures, and peoples. These writings, while shaped by the biases
-                        and assumptions of their time, constitute a significant primary source for
-                        understanding colonial-era encounters between Christianity and Hinduism.
-                    </p>
-                    <p>
-                        This database aims to make selected extracts from these writings accessible
-                        to researchers, students, and anyone interested in the history of religious
-                        encounters in colonial India.
-                    </p>
-                </section>
-
-                <section className={styles['about-section']}>
-                    <h2>What You&apos;ll Find</h2>
-                    <ul>
-                        <li>Curated extracts from missionary letters, reports, books, and pamphlets</li>
-                        <li>Biographical information about the missionaries</li>
-                        <li>Bibliographic data for the original works</li>
-                        <li>Thematic tags for easy discovery and cross-referencing</li>
-                        <li>Full-text search across all extracts</li>
-                        <li>Filtering by denomination, period, region, and topic</li>
-                    </ul>
-                </section>
-
-                <section className={styles['about-section']}>
-                    <h2>Scope</h2>
-                    <p>
-                        The database focuses primarily on 19th-century writings (c. 1793–1900),
-                        spanning the period from William Carey&apos;s arrival in India to the end of
-                        the Victorian era. It covers missionaries from major Protestant denominations
-                        including Baptist, Methodist, Anglican, Presbyterian, Congregationalist, and
-                        Lutheran traditions.
-                    </p>
-                </section>
-
-                <section className={styles['about-section']}>
-                    <h2>Methodology</h2>
-                    <p>
-                        Extracts are selected for their historical significance and illustrative
-                        value. Each extract is tagged with relevant themes and linked to its source
-                        work and author. The database is not exhaustive but aims to be representative
-                        of the range of missionary perspectives on India and Hinduism.
-                    </p>
-                </section>
+                <div className={styles['about-section']}>
+                    {renderContent(content)}
+                </div>
             </div>
         </div>
     );
