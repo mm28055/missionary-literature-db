@@ -1,211 +1,369 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { createClient } from '@/lib/supabase/client';
 import styles from './browse.module.css';
 
-// Placeholder data
-const SAMPLE_TAGS = [
-    { id: 1, name: 'Hinduism', category: 'Religion' },
-    { id: 2, name: 'Caste', category: 'Social' },
-    { id: 3, name: 'Conversion', category: 'Theme' },
-    { id: 4, name: 'Temples', category: 'Religion' },
-    { id: 5, name: 'Education', category: 'Theme' },
-    { id: 6, name: 'Women', category: 'Social' },
-    { id: 7, name: 'Idolatry', category: 'Theme' },
-    { id: 8, name: 'Scripture Translation', category: 'Theme' },
-    { id: 9, name: 'Customs & Rituals', category: 'Culture' },
-    { id: 10, name: 'Bengal', category: 'Region' },
-    { id: 11, name: 'Madras', category: 'Region' },
-    { id: 12, name: 'South India', category: 'Region' },
-];
-
-const SAMPLE_DENOMINATIONS = [
-    'Baptist', 'Methodist', 'Anglican', 'Presbyterian', 'Congregationalist', 'Lutheran',
-];
-
-const SAMPLE_EXTRACTS = [
-    {
-        id: 1,
-        content: '"The Hindus have thirty-three millions of gods, and yet they are not satisfied. They are continually adding to the number. They deify everything — rivers, mountains, trees, animals, and even the implements of husbandry."',
-        missionary: 'William Ward',
-        denomination: 'Baptist',
-        work: 'A View of the History, Literature, and Mythology of the Hindoos',
-        year: 1822,
-        tags: ['Hinduism', 'Idolatry'],
-    },
-    {
-        id: 2,
-        content: '"The caste system is the great barrier to the progress of Christianity in India. It pervades all Hindu society, and separates man from man with a rigidity which no other institution in the world can parallel."',
-        missionary: 'Alexander Duff',
-        denomination: 'Presbyterian',
-        work: 'India and India Missions',
-        year: 1839,
-        tags: ['Caste', 'Conversion'],
-    },
-    {
-        id: 3,
-        content: '"I have now been twelve years in India, and have had opportunities of observing the customs and manners of the people... The temples are magnificent structures, adorned with elaborate carvings that speak to centuries of devotion."',
-        missionary: 'Reginald Heber',
-        denomination: 'Anglican',
-        work: 'Narrative of a Journey through the Upper Provinces of India',
-        year: 1828,
-        tags: ['Temples', 'Customs & Rituals'],
-    },
-    {
-        id: 4,
-        content: '"The women of India are, for the most part, kept in a state of great ignorance. They are taught nothing beyond the most necessary domestic duties. Education, in any proper sense of the word, is wholly denied them."',
-        missionary: 'Hannah Marshman',
-        denomination: 'Baptist',
-        work: 'Letters from Serampore',
-        year: 1815,
-        tags: ['Women', 'Education'],
-    },
-    {
-        id: 5,
-        content: '"The translation of the Scriptures into Bengali has been a labour of many years. Every word has been carefully weighed, every phrase examined, to ensure that the sacred text conveys its full meaning to the native reader."',
-        missionary: 'William Carey',
-        denomination: 'Baptist',
-        work: 'Memoirs of William Carey',
-        year: 1836,
-        tags: ['Scripture Translation', 'Bengal'],
-    },
-];
+const LAYER_LABELS = {
+    missionary: 'Missionary',
+    bureaucratic: 'Bureaucratic',
+    reform: 'Reform / Response',
+};
 
 export default function BrowsePage() {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [selectedDenom, setSelectedDenom] = useState('');
+    const [extracts, setExtracts] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [expandedCard, setExpandedCard] = useState(null);
+    const [crossLinks, setCrossLinks] = useState({});
+    const [collapsedThemes, setCollapsedThemes] = useState({});
 
-    const toggleTag = (tagName) => {
-        setSelectedTags((prev) =>
-            prev.includes(tagName)
-                ? prev.filter((t) => t !== tagName)
-                : [...prev, tagName]
+    // Lightweight filters
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedLayer, setSelectedLayer] = useState('');
+
+    const supabase = createClient();
+
+    useEffect(() => { loadData(); }, []);
+
+    const loadData = async () => {
+        try {
+            const [extractsRes, tagsRes] = await Promise.all([
+                supabase.from('extracts').select(`
+                    *,
+                    works(title, year_published, author, layer, missionaries(name, denominations(name))),
+                    extract_tags(tags(id, name, tag_type, parent_id))
+                `).order('created_at', { ascending: false }),
+
+                supabase.from('tags').select('*').order('name'),
+            ]);
+
+            setExtracts(extractsRes.data || []);
+            setTags(tagsRes.data || []);
+        } catch {
+            console.error('Failed to load data');
+        }
+        setLoading(false);
+    };
+
+    // Organize tags
+    const parentThemes = tags.filter(t => t.tag_type === 'theme' && !t.parent_id);
+    const subThemes = tags.filter(t => t.tag_type === 'theme' && t.parent_id);
+    const getSubThemes = (parentId) => subThemes.filter(t => t.parent_id === parentId);
+
+    // Filter extracts
+    const filtered = extracts.filter(e => {
+        const matchesSearch = searchQuery === '' ||
+            e.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            e.works?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            e.works?.missionaries?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            e.works?.author?.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesLayer = selectedLayer === '' || e.layer === selectedLayer;
+        return matchesSearch && matchesLayer;
+    });
+
+    // Group extracts by sub-theme
+    const getExtractsForSubTheme = (subThemeId) => {
+        return filtered.filter(e =>
+            (e.extract_tags || []).some(et => et.tags?.id === subThemeId)
         );
     };
 
-    // Filter extracts
-    const filtered = SAMPLE_EXTRACTS.filter((e) => {
-        const matchesSearch = searchQuery === '' ||
-            e.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            e.missionary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            e.work.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesTags = selectedTags.length === 0 ||
-            selectedTags.some((t) => e.tags.includes(t));
-        const matchesDenom = selectedDenom === '' || e.denomination === selectedDenom;
-        return matchesSearch && matchesTags && matchesDenom;
+    // Track themed extract IDs for "Other" section
+    const themedExtractIds = new Set();
+    parentThemes.forEach(parent => {
+        getSubThemes(parent.id).forEach(sub => {
+            getExtractsForSubTheme(sub.id).forEach(e => themedExtractIds.add(e.id));
+        });
     });
+    const unthemedExtracts = filtered.filter(e => !themedExtractIds.has(e.id));
+
+    // Cross-links
+    const loadCrossLinks = async (extractId) => {
+        if (crossLinks[extractId]) return;
+        const { data } = await supabase.from('extract_links').select(`
+            *,
+            source:extracts!extract_links_source_extract_id_fkey(id, content, layer,
+                works(title, author, missionaries(name))),
+            target:extracts!extract_links_target_extract_id_fkey(id, content, layer,
+                works(title, author, missionaries(name)))
+        `).or(`source_extract_id.eq.${extractId},target_extract_id.eq.${extractId}`);
+        setCrossLinks(prev => ({ ...prev, [extractId]: data || [] }));
+    };
+
+    const toggleExpand = (extractId) => {
+        if (expandedCard === extractId) {
+            setExpandedCard(null);
+        } else {
+            setExpandedCard(extractId);
+            loadCrossLinks(extractId);
+        }
+    };
+
+    const toggleTheme = (themeId) => {
+        setCollapsedThemes(prev => ({ ...prev, [themeId]: !prev[themeId] }));
+    };
+
+    const getAuthor = (extract) => {
+        if (extract.works?.missionaries?.name) return extract.works.missionaries.name;
+        if (extract.works?.author) return extract.works.author;
+        return 'Unknown';
+    };
+
+    // Roman numeral for theme index
+    const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+
+    // Render extract as a document-style passage
+    const renderExtract = (extract) => {
+        const isExpanded = expandedCard === extract.id;
+        const extractTags = (extract.extract_tags || []).map(et => et.tags).filter(Boolean);
+        const strategyTags = extractTags.filter(t => t.tag_type === 'strategy');
+        const sourceTags = extractTags.filter(t => t.tag_type === 'source_type');
+        const links = crossLinks[extract.id] || [];
+
+        return (
+            <div
+                key={extract.id}
+                className={`${styles.passage} ${isExpanded ? styles.passageExpanded : ''}`}
+                onClick={() => toggleExpand(extract.id)}
+            >
+                {/* Attribution line */}
+                <div className={styles.attribution}>
+                    <span className={styles.author}>{getAuthor(extract)}</span>
+                    <span className={styles.separator}>·</span>
+                    <span className={styles.workTitle}>{extract.works?.title}</span>
+                    {extract.works?.year_published && (
+                        <>
+                            <span className={styles.separator}>·</span>
+                            <span className={styles.year}>{extract.works.year_published}</span>
+                        </>
+                    )}
+                    <span className={`${styles.layerBadge} ${styles[`layer${extract.layer?.charAt(0).toUpperCase()}${extract.layer?.slice(1)}`]}`}>
+                        {LAYER_LABELS[extract.layer] || extract.layer}
+                    </span>
+                </div>
+
+                {/* The extract text — the star of the show */}
+                <blockquote className={styles.quoteBlock}>
+                    <p className={isExpanded ? '' : styles.quoteClamped}>
+                        {extract.content}
+                    </p>
+                </blockquote>
+
+                {extract.source_reference && (
+                    <div className={styles.sourceRef}>— {extract.source_reference}</div>
+                )}
+
+                {/* Strategy + source type tags */}
+                {(strategyTags.length > 0 || sourceTags.length > 0) && (
+                    <div className={styles.passageTags}>
+                        {strategyTags.map(t => (
+                            <span key={t.id} className={styles.strategyTag}>{t.name}</span>
+                        ))}
+                        {sourceTags.map(t => (
+                            <span key={t.id} className={styles.sourceTag}>{t.name}</span>
+                        ))}
+                    </div>
+                )}
+
+                {/* Expanded: scholarly commentary + cross-links */}
+                {isExpanded && (
+                    <div className={styles.marginalia} onClick={e => e.stopPropagation()}>
+                        {extract.commentary && (
+                            <div className={styles.commentaryBlock}>
+                                <div className={styles.commentaryMarker}>✦ Commentary</div>
+                                <p>{extract.commentary}</p>
+                            </div>
+                        )}
+
+                        {links.length > 0 && (
+                            <div className={styles.chainSection}>
+                                <div className={styles.chainTitle}>
+                                    ↯ Tracing the Causal Chain
+                                </div>
+                                {links.map(link => {
+                                    const isSource = link.source_extract_id === extract.id;
+                                    const linked = isSource ? link.target : link.source;
+                                    const direction = isSource ? '→' : '←';
+                                    const linkedAuthor = linked?.works?.missionaries?.name || linked?.works?.author || '';
+                                    return (
+                                        <div key={link.id} className={styles.chainLink}>
+                                            <div className={styles.chainArrow}>{direction}</div>
+                                            <div className={styles.chainContent}>
+                                                <div className={styles.chainMeta}>
+                                                    <span className={`${styles.layerBadge} ${styles[`layer${linked?.layer?.charAt(0).toUpperCase()}${linked?.layer?.slice(1)}`]}`}>
+                                                        {LAYER_LABELS[linked?.layer] || linked?.layer}
+                                                    </span>
+                                                    <span className={styles.chainType}>{link.link_type}</span>
+                                                </div>
+                                                <div className={styles.chainSource}>
+                                                    {linkedAuthor && `${linkedAuthor}, `}
+                                                    <em>{linked?.works?.title}</em>
+                                                </div>
+                                                <blockquote className={styles.chainQuote}>
+                                                    &ldquo;{linked?.content?.substring(0, 180)}...&rdquo;
+                                                </blockquote>
+                                                {link.commentary && (
+                                                    <p className={styles.chainCommentary}>{link.commentary}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     return (
         <div className="page-content">
             <div className="container">
-                <div className={styles['browse-header']}>
-                    <h1>Browse Extracts</h1>
-                    <p>Explore missionary writings on India and Hinduism. Filter by theme, denomination, or search for specific content.</p>
+                {/* Page title — scholarly, not app-like */}
+                <header className={styles.pageHeader}>
+                    <h1 className={styles.pageTitle}>The Archive</h1>
+                    <p className={styles.pageEpigraph}>
+                        Selected extracts from 19th-century missionary writings on India — organized
+                        by the thematic patterns through which missionaries constructed, critiqued, and
+                        sought to dismantle Hindu civilization.
+                    </p>
+                </header>
+
+                {/* Search + filter — unobtrusive */}
+                <div className={styles.filterBar}>
+                    <div className={styles.searchWrap}>
+                        <span className={styles.searchIcon}>⌕</span>
+                        <input
+                            type="text"
+                            className={styles.searchInput}
+                            placeholder="Search the archive..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+                    <select
+                        className={styles.layerSelect}
+                        value={selectedLayer}
+                        onChange={e => setSelectedLayer(e.target.value)}
+                    >
+                        <option value="">All layers</option>
+                        {Object.entries(LAYER_LABELS).map(([val, label]) => (
+                            <option key={val} value={val}>{label}</option>
+                        ))}
+                    </select>
+                    {(searchQuery || selectedLayer) && (
+                        <button
+                            className={styles.clearBtn}
+                            onClick={() => { setSearchQuery(''); setSelectedLayer(''); }}
+                        >
+                            Clear
+                        </button>
+                    )}
+                    <span className={styles.resultCount}>
+                        {loading ? '' : `${filtered.length} passage${filtered.length !== 1 ? 's' : ''}`}
+                    </span>
                 </div>
 
-                <div className={styles['browse-layout']}>
-                    {/* Sidebar Filters */}
-                    <aside className={styles.sidebar}>
-                        <div className="card" style={{ padding: 'var(--space-lg)' }}>
-                            {/* Search */}
-                            <div className={styles['browse-search']}>
-                                <input
-                                    type="text"
-                                    className={styles['browse-search-input']}
-                                    placeholder="Search content..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </div>
-
-                            {/* Denomination filter */}
-                            <div className={styles['filter-section']}>
-                                <div className={styles['filter-title']}>Denomination</div>
-                                <select
-                                    className="form-select"
-                                    value={selectedDenom}
-                                    onChange={(e) => setSelectedDenom(e.target.value)}
+                {/* Layout: TOC + Content */}
+                <div className={styles.archiveLayout}>
+                    {/* Sticky TOC — shows parent themes + sub-theme counts */}
+                    <nav className={styles.toc}>
+                        <div className={styles.tocLabel}>Contents</div>
+                        {parentThemes.map((parent, i) => {
+                            const subs = getSubThemes(parent.id);
+                            const count = subs.reduce((n, sub) => n + getExtractsForSubTheme(sub.id).length, 0);
+                            return (
+                                <a
+                                    key={parent.id}
+                                    href={`#theme-${parent.id}`}
+                                    className={styles.tocItem}
                                 >
-                                    <option value="">All denominations</option>
-                                    {SAMPLE_DENOMINATIONS.map((d) => (
-                                        <option key={d} value={d}>{d}</option>
-                                    ))}
-                                </select>
-                            </div>
+                                    <span className={styles.tocNumeral}>{romanNumerals[i]}</span>
+                                    <span className={styles.tocName}>{parent.name}</span>
+                                    {count > 0 && <span className={styles.tocCount}>{count}</span>}
+                                </a>
+                            );
+                        })}
+                    </nav>
 
-                            {/* Tags */}
-                            <div className={styles['filter-section']}>
-                                <div className={styles['filter-title']}>Tags</div>
-                                <div className={styles['filter-tags']}>
-                                    {SAMPLE_TAGS.map((tag) => (
-                                        <span
-                                            key={tag.id}
-                                            className={`tag ${styles['filter-tag']} ${selectedTags.includes(tag.name) ? styles.selected : ''}`}
-                                            onClick={() => toggleTag(tag.name)}
-                                        >
-                                            {tag.name}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
+                    {/* Main content — editorial layout */}
+                    <div className={styles.content}>
+                        {!loading && parentThemes.map((parent, i) => {
+                            const subs = getSubThemes(parent.id);
+                            const isCollapsed = collapsedThemes[parent.id];
+                            const hasExtracts = subs.some(sub => getExtractsForSubTheme(sub.id).length > 0);
+                            if (!hasExtracts && (searchQuery || selectedLayer)) return null;
 
-                            {/* Clear */}
-                            {(selectedTags.length > 0 || selectedDenom || searchQuery) && (
-                                <button
-                                    className="btn btn-ghost"
-                                    onClick={() => {
-                                        setSelectedTags([]);
-                                        setSelectedDenom('');
-                                        setSearchQuery('');
-                                    }}
-                                    style={{ width: '100%', justifyContent: 'center', marginTop: 'var(--space-sm)' }}
-                                >
-                                    Clear all filters
-                                </button>
-                            )}
-                        </div>
-                    </aside>
-
-                    {/* Results */}
-                    <div className={styles['results-area']}>
-                        <div className={styles['results-header']}>
-                            <span className={styles['results-count']}>
-                                {filtered.length} extract{filtered.length !== 1 ? 's' : ''} found
-                            </span>
-                            <select className={styles['sort-select']}>
-                                <option>Sort by: Date</option>
-                                <option>Sort by: Missionary</option>
-                                <option>Sort by: Relevance</option>
-                            </select>
-                        </div>
-
-                        <div className={styles['results-list']}>
-                            {filtered.map((extract) => (
-                                <article key={extract.id} className={`card ${styles['result-card']}`}>
-                                    <div className={styles['result-card-header']}>
-                                        <span className={styles['result-card-missionary']}>
-                                            {extract.missionary}
-                                        </span>
-                                        <span className={styles['result-card-year']}>{extract.year}</span>
+                            return (
+                                <section key={parent.id} id={`theme-${parent.id}`} className={styles.themeSection}>
+                                    {/* Theme heading — like a chapter */}
+                                    <div className={styles.chapterHead} onClick={() => toggleTheme(parent.id)}>
+                                        <div className={styles.chapterNumeral}>{romanNumerals[i]}</div>
+                                        <h2 className={styles.chapterTitle}>{parent.name}</h2>
+                                        <div className={styles.chapterRule} />
+                                        <p className={styles.chapterDesc}>{parent.description}</p>
                                     </div>
-                                    <div className={styles['result-card-work']}>{extract.work}</div>
-                                    <p className={styles['result-card-content']}>{extract.content}</p>
-                                    <div className={styles['result-card-tags']}>
-                                        {extract.tags.map((tag) => (
-                                            <span key={tag} className="tag">{tag}</span>
-                                        ))}
-                                    </div>
-                                </article>
-                            ))}
 
-                            {filtered.length === 0 && (
-                                <div className="empty-state">
-                                    <div className="empty-state-icon">🔍</div>
-                                    <p>No extracts match your filters. Try adjusting your search or clearing filters.</p>
+                                    {/* Sub-theme chips — visible at a glance */}
+                                    {!isCollapsed && subs.length > 0 && (
+                                        <div className={styles.subThemeIndex}>
+                                            {subs.map(sub => {
+                                                const count = getExtractsForSubTheme(sub.id).length;
+                                                return (
+                                                    <a
+                                                        key={sub.id}
+                                                        href={`#sub-${sub.id}`}
+                                                        className={`${styles.subThemeChip} ${count === 0 ? styles.subThemeEmpty : ''}`}
+                                                    >
+                                                        {sub.name}
+                                                        {count > 0 && <span className={styles.chipCount}>{count}</span>}
+                                                    </a>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
+                                    {/* Sub-theme sections with extracts */}
+                                    {!isCollapsed && subs.map(sub => {
+                                        const subExtracts = getExtractsForSubTheme(sub.id);
+                                        if (subExtracts.length === 0) return null;
+
+                                        return (
+                                            <div key={sub.id} id={`sub-${sub.id}`} className={styles.subSection}>
+                                                <h3 className={styles.subTitle}>{sub.name}</h3>
+                                                {sub.description && (
+                                                    <p className={styles.subDesc}>{sub.description}</p>
+                                                )}
+                                                <div className={styles.passages}>
+                                                    {subExtracts.map(e => renderExtract(e))}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </section>
+                            );
+                        })}
+
+                        {/* Unthemed */}
+                        {!loading && unthemedExtracts.length > 0 && (
+                            <section className={styles.themeSection}>
+                                <div className={styles.chapterHead}>
+                                    <h2 className={styles.chapterTitle}>Uncategorized</h2>
+                                    <div className={styles.chapterRule} />
                                 </div>
-                            )}
-                        </div>
+                                <div className={styles.passages}>
+                                    {unthemedExtracts.map(e => renderExtract(e))}
+                                </div>
+                            </section>
+                        )}
+
+                        {!loading && filtered.length === 0 && (
+                            <div className={styles.emptyState}>
+                                <p>No passages match your search.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

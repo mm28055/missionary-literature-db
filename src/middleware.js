@@ -34,10 +34,15 @@ export async function middleware(request) {
         },
     });
 
-    // Refresh the session
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    // Refresh the session — gracefully handle fetch failures
+    let user = null;
+    try {
+        const { data } = await supabase.auth.getUser();
+        user = data?.user ?? null;
+    } catch (e) {
+        // Supabase unreachable or stale cookie — continue without auth
+        console.warn('Middleware: Supabase auth check failed, continuing without auth.');
+    }
 
     // Protect admin routes
     if (request.nextUrl.pathname.startsWith('/admin') && !user) {

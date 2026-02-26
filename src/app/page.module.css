@@ -17,13 +17,7 @@
   pointer-events: none;
 }
 
-.hero-icon {
-  font-size: 4rem;
-  margin-bottom: var(--space-lg);
-  display: block;
-}
-
-.hero h1 {
+.heroTitle {
   font-size: 3.2rem;
   font-weight: 700;
   margin-bottom: var(--space-md);
@@ -33,7 +27,7 @@
   background-clip: text;
 }
 
-.hero-subtitle {
+.heroSubtitle {
   font-size: 1.15rem;
   color: var(--text-secondary);
   max-width: 650px;
@@ -41,97 +35,99 @@
   line-height: 1.8;
 }
 
-.hero-actions {
+.heroActions {
   display: flex;
   justify-content: center;
   gap: var(--space-md);
   flex-wrap: wrap;
 }
 
-/* Search Section */
-.search-section {
-  max-width: 600px;
-  margin: var(--space-3xl) auto;
-  text-align: center;
-}
-
-.search-wrapper {
-  position: relative;
-}
-
-.search-input {
-  width: 100%;
-  padding: var(--space-md) var(--space-xl);
-  padding-left: 3rem;
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: var(--text-primary);
-  background: var(--bg-card);
-  border: 1px solid var(--border-medium);
-  border-radius: 100px;
-  outline: none;
-  transition: all var(--transition-base);
-}
-
-.search-input:focus {
-  border-color: var(--accent-gold);
-  box-shadow: var(--shadow-glow);
-}
-
-.search-input::placeholder {
-  color: var(--text-muted);
-}
-
-.search-icon {
-  position: absolute;
-  left: var(--space-lg);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  font-size: 1.1rem;
-  pointer-events: none;
-}
-
-/* Stats Grid */
-.stats-grid {
+/* Stats */
+.statsRow {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-lg);
   margin: var(--space-3xl) 0;
 }
 
-/* Featured Extracts */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: var(--space-xl);
+.statCard {
+  text-align: center;
+  padding: var(--space-xl) var(--space-lg);
 }
 
-.section-header h2 {
-  font-size: 1.75rem;
+.statIcon {
+  font-size: 2rem;
+  margin-bottom: var(--space-sm);
 }
 
-.section-link {
-  font-size: 0.9rem;
-  color: var(--accent-gold-dim);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.section-link:hover {
+.statValue {
+  font-size: 2.4rem;
+  font-weight: 700;
   color: var(--accent-gold);
+  font-variant-numeric: tabular-nums;
 }
 
-.extracts-grid {
+.statLabel {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: var(--space-xs);
+}
+
+/* Featured Extracts */
+.featured {
+  margin: var(--space-3xl) 0;
+}
+
+.sectionTitle {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+.extractGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: var(--space-lg);
 }
 
-.extract-card-content {
+.extractCard {
+  padding: var(--space-lg);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+}
+
+.extractCard:hover {
+  border-color: rgba(212, 165, 116, 0.3);
+  transform: translateY(-2px);
+}
+
+.extractCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
+.extractCardAuthor {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.extractCardWork {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: var(--space-md);
+}
+
+.extractCardContent {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-style: italic;
   color: var(--text-primary);
   line-height: 1.8;
@@ -140,38 +136,26 @@
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex: 1;
 }
 
-.extract-card-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.extract-card-source {
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.extract-card-tags {
+.extractCardTags {
   display: flex;
   gap: var(--space-xs);
   flex-wrap: wrap;
-  margin-top: var(--space-sm);
+  margin-top: auto;
 }
 
 @media (max-width: 768px) {
-  .hero h1 {
+  .heroTitle {
     font-size: 2.2rem;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
+  .statsRow {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .extracts-grid {
+  .extractGrid {
     grid-template-columns: 1fr;
   }
 }

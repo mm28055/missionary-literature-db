@@ -43,7 +43,7 @@ export default async function AdminPage() {
         },
         {
             title: 'Tags',
-            description: 'Manage thematic tags for categorizing extracts',
+            description: 'Manage thematic taxonomy — parent themes, sub-themes, strategies',
             icon: '🏷️',
             href: '/admin/tags',
         },
@@ -52,6 +52,12 @@ export default async function AdminPage() {
             description: 'Manage missionary denominations and organizations',
             icon: '⛪',
             href: '/admin/denominations',
+        },
+        {
+            title: 'Cross-Links',
+            description: 'Trace the genealogy of ideas across missionary → bureaucratic → reform layers',
+            icon: '🔗',
+            href: '/admin/links',
         },
     ];
 

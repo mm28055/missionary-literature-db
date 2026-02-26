@@ -1,0 +1,326 @@
+/* ==========================================================
+   Extract Detail Page — Full scholarly view
+   ========================================================== */
+
+.extractPage {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ---- Header ---- */
+.extractHeader {
+    padding: var(--space-lg) 0 var(--space-xl);
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-xl);
+}
+
+.extractMeta {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--space-sm);
+}
+
+.extractAuthor {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-heading);
+}
+
+.extractWork {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.extractYear {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.metaRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+}
+
+.layerBadgeLg {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 2px;
+}
+
+.layerMissionary {
+    color: var(--accent-copper);
+    background: rgba(168, 94, 46, 0.1);
+    border: 1px solid rgba(168, 94, 46, 0.2);
+}
+
+.layerBureaucratic {
+    color: #5a7a6b;
+    background: rgba(90, 122, 107, 0.1);
+    border: 1px solid rgba(90, 122, 107, 0.2);
+}
+
+.layerReform {
+    color: #7a5a5a;
+    background: rgba(122, 90, 90, 0.1);
+    border: 1px solid rgba(122, 90, 90, 0.2);
+}
+
+.denomination {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.sourceRef {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: var(--space-xs);
+}
+
+/* ---- The Extract Text ---- */
+.quoteSection {
+    padding: var(--space-2xl) 0;
+}
+
+.quoteBlock {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-style: italic;
+    line-height: 2;
+    color: var(--text-primary);
+    padding: 0;
+    margin: 0;
+    position: relative;
+    padding-left: var(--space-xl);
+    border-left: 3px solid rgba(184, 132, 58, 0.3);
+}
+
+.quoteBlock::before {
+    content: '\201C';
+    position: absolute;
+    left: -8px;
+    top: -20px;
+    font-size: 4rem;
+    color: rgba(184, 132, 58, 0.15);
+    font-family: var(--font-heading);
+    line-height: 1;
+}
+
+/* ---- Commentary ---- */
+.commentarySection {
+    margin: var(--space-2xl) 0;
+    padding: var(--space-xl) var(--space-xl);
+    background: rgba(184, 132, 58, 0.03);
+    border-left: 3px solid rgba(184, 132, 58, 0.25);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.commentaryLabel {
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-gold-dim);
+    margin-bottom: var(--space-md);
+}
+
+.commentaryText {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.85;
+    white-space: pre-line;
+}
+
+/* ---- Tags Section ---- */
+.tagsSection {
+    padding: var(--space-lg) 0;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.tagsLabel {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+}
+
+.tagsList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: var(--space-md);
+}
+
+.themeTag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 12px;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--accent-gold);
+    background: rgba(184, 132, 58, 0.1);
+    border: 1px solid rgba(184, 132, 58, 0.2);
+    border-radius: 100px;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.themeTag:hover {
+    background: rgba(184, 132, 58, 0.2);
+    border-color: rgba(184, 132, 58, 0.35);
+}
+
+.strategyTag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 12px;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #5a7a6b;
+    background: rgba(90, 122, 107, 0.08);
+    border: 1px solid rgba(90, 122, 107, 0.2);
+    border-radius: 100px;
+}
+
+.sourceTag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 12px;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--border-subtle);
+    border-radius: 100px;
+}
+
+/* ---- Cross-Links Section ---- */
+.crossLinksSection {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.crossLinksTitle {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-lg);
+}
+
+.crossLink {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    border-top: 1px dashed var(--border-subtle);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition-fast);
+}
+
+.crossLink:hover {
+    background: rgba(184, 132, 58, 0.02);
+}
+
+.crossLinkArrow {
+    font-size: 1.2rem;
+    color: var(--accent-gold-dim);
+    padding-top: 2px;
+    flex-shrink: 0;
+}
+
+.crossLinkContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.crossLinkMeta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: 4px;
+}
+
+.crossLinkType {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.crossLinkSource {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.crossLinkQuote {
+    font-family: var(--font-heading);
+    font-size: 0.88rem;
+    font-style: italic;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.crossLinkCommentary {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: var(--space-xs);
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+    .extractPage {
+        padding: 0 var(--space-sm);
+    }
+
+    .extractAuthor {
+        font-size: 1.15rem;
+    }
+
+    .quoteBlock {
+        font-size: 1.05rem;
+        padding-left: var(--space-md);
+    }
+
+    .commentarySection {
+        padding: var(--space-md);
+    }
+}

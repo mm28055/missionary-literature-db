@@ -42,11 +42,11 @@ export default function Navbar({ user }) {
                     </li>
                     <li>
                         <Link
-                            href="/browse"
-                            className={`${styles['navbar-link']} ${isActive('/browse') ? styles.active : ''}`}
+                            href="/themes"
+                            className={`${styles['navbar-link']} ${isActive('/themes') ? styles.active : ''}`}
                             onClick={() => setMenuOpen(false)}
                         >
-                            Browse
+                            Themes
                         </Link>
                     </li>
                     <li>
