@@ -179,7 +179,7 @@ export default function AdminExtractsPage() {
                     </div>
 
                     <div style={{ marginBottom: 'var(--space-md)' }}>
-                        <label className={styles.label}>Scholarly Commentary</label>
+                        <label className={styles.label}>Commentary</label>
                         <textarea
                             className={styles.textarea}
                             value={form.commentary}

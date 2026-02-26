@@ -171,7 +171,7 @@ export default async function ExtractDetailPage({ params }) {
                             {/* Commentary */}
                             {extract.commentary && (
                                 <section className={styles.commentarySection}>
-                                    <div className={styles.commentaryLabel}>✦ Scholarly Commentary</div>
+                                    <div className={styles.commentaryLabel}>✦ Commentary</div>
                                     <div className={styles.commentaryText}>{extract.commentary}</div>
                                 </section>
                             )}
