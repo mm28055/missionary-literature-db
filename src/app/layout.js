@@ -1,9 +1,6 @@
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { createClient } from '@/lib/supabase/server';
-
-export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Missionary Literature Database — 19th Century Writings on India & Hinduism',
@@ -11,20 +8,11 @@ export const metadata = {
   keywords: ['missionary', 'literature', 'India', 'Hinduism', '19th century', 'digital humanities', 'colonial history'],
 };
 
-export default async function RootLayout({ children }) {
-  let user = null;
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    user = data?.user || null;
-  } catch {
-    // Supabase not configured yet — that's fine
-  }
-
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <Navbar user={user} />
+        <Navbar />
         <main>{children}</main>
         <Footer />
       </body>

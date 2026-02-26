@@ -1,13 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import styles from './Navbar.module.css';
 
-export default function Navbar({ user }) {
+export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [user, setUser] = useState(null);
     const pathname = usePathname();
+
+    useEffect(() => {
+        const supabase = createClient();
+        supabase.auth.getUser().then(({ data }) => {
+            setUser(data?.user || null);
+        }).catch(() => { });
+    }, []);
 
     const isActive = (path) => {
         if (path === '/') return pathname === '/';
