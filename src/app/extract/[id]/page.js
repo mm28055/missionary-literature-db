@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import styles from './extract.module.css';
+import ThemeSidebar from '@/components/ThemeSidebar';
+import sidebarStyles from '@/components/ThemeSidebar.module.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,152 +105,157 @@ export default async function ExtractDetailPage({ params }) {
     return (
         <div className="page-content">
             <div className="container">
-                <div className={styles.extractPage}>
-                    {/* Breadcrumb */}
-                    <nav style={{
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.78rem',
-                        color: 'var(--text-muted)',
-                        marginBottom: 'var(--space-xl)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        flexWrap: 'wrap',
-                    }}>
-                        <Link href="/" style={{ color: 'var(--text-muted)' }}>Home</Link>
-                        <span style={{ color: 'var(--border-medium)' }}>›</span>
-                        <Link href="/themes" style={{ color: 'var(--text-muted)' }}>Themes</Link>
-                        {parentTheme && (
-                            <>
+                <div className={sidebarStyles.sidebarLayout}>
+                    <ThemeSidebar />
+                    <div className={sidebarStyles.sidebarContent}>
+                        <div className={styles.extractPage}>
+                            {/* Breadcrumb */}
+                            <nav style={{
+                                fontFamily: 'var(--font-body)',
+                                fontSize: '0.78rem',
+                                color: 'var(--text-muted)',
+                                marginBottom: 'var(--space-xl)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                flexWrap: 'wrap',
+                            }}>
+                                <Link href="/" style={{ color: 'var(--text-muted)' }}>Home</Link>
                                 <span style={{ color: 'var(--border-medium)' }}>›</span>
-                                <Link href={`/themes/${parentTheme.id}`} style={{ color: 'var(--text-muted)' }}>{parentTheme.name}</Link>
-                            </>
-                        )}
-                        {subThemeTag && parentTheme && (
-                            <>
+                                <Link href="/themes" style={{ color: 'var(--text-muted)' }}>Themes</Link>
+                                {parentTheme && (
+                                    <>
+                                        <span style={{ color: 'var(--border-medium)' }}>›</span>
+                                        <Link href={`/themes/${parentTheme.id}`} style={{ color: 'var(--text-muted)' }}>{parentTheme.name}</Link>
+                                    </>
+                                )}
+                                {subThemeTag && parentTheme && (
+                                    <>
+                                        <span style={{ color: 'var(--border-medium)' }}>›</span>
+                                        <Link href={`/themes/${parentTheme.id}/${subThemeTag.id}`} style={{ color: 'var(--text-muted)' }}>{subThemeTag.name}</Link>
+                                    </>
+                                )}
                                 <span style={{ color: 'var(--border-medium)' }}>›</span>
-                                <Link href={`/themes/${parentTheme.id}/${subThemeTag.id}`} style={{ color: 'var(--text-muted)' }}>{subThemeTag.name}</Link>
-                            </>
-                        )}
-                        <span style={{ color: 'var(--border-medium)' }}>›</span>
-                        <span style={{ color: 'var(--text-secondary)' }}>Extract</span>
-                    </nav>
+                                <span style={{ color: 'var(--text-secondary)' }}>Extract</span>
+                            </nav>
 
-                    {/* Header */}
-                    <header className={styles.extractHeader}>
-                        <div className={styles.extractMeta}>
-                            <span className={styles.extractAuthor}>{author}</span>
-                        </div>
-                        <div className={styles.extractWork}>
-                            {extract.works?.title}
-                            {extract.works?.year_published && ` (${extract.works.year_published})`}
-                        </div>
-                        <div className={styles.metaRow}>
-                            <span className={`${styles.layerBadgeLg} ${styles[LAYER_STYLE_MAP[extract.layer]]}`}>
-                                {LAYER_LABELS[extract.layer] || extract.layer}
-                            </span>
-                            {denomination && (
-                                <span className={styles.denomination}>{denomination}</span>
+                            {/* Header */}
+                            <header className={styles.extractHeader}>
+                                <div className={styles.extractMeta}>
+                                    <span className={styles.extractAuthor}>{author}</span>
+                                </div>
+                                <div className={styles.extractWork}>
+                                    {extract.works?.title}
+                                    {extract.works?.year_published && ` (${extract.works.year_published})`}
+                                </div>
+                                <div className={styles.metaRow}>
+                                    <span className={`${styles.layerBadgeLg} ${styles[LAYER_STYLE_MAP[extract.layer]]}`}>
+                                        {LAYER_LABELS[extract.layer] || extract.layer}
+                                    </span>
+                                    {denomination && (
+                                        <span className={styles.denomination}>{denomination}</span>
+                                    )}
+                                </div>
+                                {extract.source_reference && (
+                                    <div className={styles.sourceRef}>{extract.source_reference}</div>
+                                )}
+                            </header>
+
+                            {/* The extract text */}
+                            <section className={styles.quoteSection}>
+                                <blockquote className={styles.quoteBlock}>
+                                    {extract.content}
+                                </blockquote>
+                            </section>
+
+                            {/* Commentary */}
+                            {extract.commentary && (
+                                <section className={styles.commentarySection}>
+                                    <div className={styles.commentaryLabel}>✦ Scholarly Commentary</div>
+                                    <div className={styles.commentaryText}>{extract.commentary}</div>
+                                </section>
                             )}
-                        </div>
-                        {extract.source_reference && (
-                            <div className={styles.sourceRef}>{extract.source_reference}</div>
-                        )}
-                    </header>
 
-                    {/* The extract text */}
-                    <section className={styles.quoteSection}>
-                        <blockquote className={styles.quoteBlock}>
-                            {extract.content}
-                        </blockquote>
-                    </section>
-
-                    {/* Commentary */}
-                    {extract.commentary && (
-                        <section className={styles.commentarySection}>
-                            <div className={styles.commentaryLabel}>✦ Scholarly Commentary</div>
-                            <div className={styles.commentaryText}>{extract.commentary}</div>
-                        </section>
-                    )}
-
-                    {/* Tags */}
-                    {(themeTags.length > 0 || strategyTags.length > 0 || sourceTags.length > 0) && (
-                        <section className={styles.tagsSection}>
-                            {themeTags.length > 0 && (
-                                <>
-                                    <div className={styles.tagsLabel}>Themes</div>
-                                    <div className={styles.tagsList}>
-                                        {themeTags.map(t => (
-                                            <span key={t.id} className={styles.themeTag}>{t.name}</span>
-                                        ))}
-                                    </div>
-                                </>
-                            )}
-                            {strategyTags.length > 0 && (
-                                <>
-                                    <div className={styles.tagsLabel}>Discursive Strategies</div>
-                                    <div className={styles.tagsList}>
-                                        {strategyTags.map(t => (
-                                            <span key={t.id} className={styles.strategyTag}>{t.name}</span>
-                                        ))}
-                                    </div>
-                                </>
-                            )}
-                            {sourceTags.length > 0 && (
-                                <>
-                                    <div className={styles.tagsLabel}>Source Type</div>
-                                    <div className={styles.tagsList}>
-                                        {sourceTags.map(t => (
-                                            <span key={t.id} className={styles.sourceTag}>{t.name}</span>
-                                        ))}
-                                    </div>
-                                </>
-                            )}
-                        </section>
-                    )}
-
-                    {/* Cross-links */}
-                    {(crossLinks || []).length > 0 && (
-                        <section className={styles.crossLinksSection}>
-                            <div className={styles.crossLinksTitle}>
-                                ↯ Tracing the Causal Chain
-                            </div>
-                            {(crossLinks || []).map(link => {
-                                const isSource = link.source_extract_id === id;
-                                const linked = isSource ? link.target : link.source;
-                                const direction = isSource ? '→' : '←';
-                                const linkedAuthor = linked?.works?.missionaries?.name || linked?.works?.author || '';
-
-                                return (
-                                    <Link
-                                        key={link.id}
-                                        href={`/extract/${linked?.id}`}
-                                        className={styles.crossLink}
-                                    >
-                                        <div className={styles.crossLinkArrow}>{direction}</div>
-                                        <div className={styles.crossLinkContent}>
-                                            <div className={styles.crossLinkMeta}>
-                                                <span className={`${styles.layerBadgeLg} ${styles[LAYER_STYLE_MAP[linked?.layer]]}`}>
-                                                    {LAYER_LABELS[linked?.layer] || linked?.layer}
-                                                </span>
-                                                <span className={styles.crossLinkType}>{link.link_type}</span>
+                            {/* Tags */}
+                            {(themeTags.length > 0 || strategyTags.length > 0 || sourceTags.length > 0) && (
+                                <section className={styles.tagsSection}>
+                                    {themeTags.length > 0 && (
+                                        <>
+                                            <div className={styles.tagsLabel}>Themes</div>
+                                            <div className={styles.tagsList}>
+                                                {themeTags.map(t => (
+                                                    <span key={t.id} className={styles.themeTag}>{t.name}</span>
+                                                ))}
                                             </div>
-                                            <div className={styles.crossLinkSource}>
-                                                {linkedAuthor && `${linkedAuthor}, `}
-                                                <em>{linked?.works?.title}</em>
+                                        </>
+                                    )}
+                                    {strategyTags.length > 0 && (
+                                        <>
+                                            <div className={styles.tagsLabel}>Discursive Strategies</div>
+                                            <div className={styles.tagsList}>
+                                                {strategyTags.map(t => (
+                                                    <span key={t.id} className={styles.strategyTag}>{t.name}</span>
+                                                ))}
                                             </div>
-                                            <blockquote className={styles.crossLinkQuote}>
-                                                &ldquo;{linked?.content?.substring(0, 200)}...&rdquo;
-                                            </blockquote>
-                                            {link.commentary && (
-                                                <p className={styles.crossLinkCommentary}>{link.commentary}</p>
-                                            )}
-                                        </div>
-                                    </Link>
-                                );
-                            })}
-                        </section>
-                    )}
+                                        </>
+                                    )}
+                                    {sourceTags.length > 0 && (
+                                        <>
+                                            <div className={styles.tagsLabel}>Source Type</div>
+                                            <div className={styles.tagsList}>
+                                                {sourceTags.map(t => (
+                                                    <span key={t.id} className={styles.sourceTag}>{t.name}</span>
+                                                ))}
+                                            </div>
+                                        </>
+                                    )}
+                                </section>
+                            )}
+
+                            {/* Cross-links */}
+                            {(crossLinks || []).length > 0 && (
+                                <section className={styles.crossLinksSection}>
+                                    <div className={styles.crossLinksTitle}>
+                                        ↯ Tracing the Causal Chain
+                                    </div>
+                                    {(crossLinks || []).map(link => {
+                                        const isSource = link.source_extract_id === id;
+                                        const linked = isSource ? link.target : link.source;
+                                        const direction = isSource ? '→' : '←';
+                                        const linkedAuthor = linked?.works?.missionaries?.name || linked?.works?.author || '';
+
+                                        return (
+                                            <Link
+                                                key={link.id}
+                                                href={`/extract/${linked?.id}`}
+                                                className={styles.crossLink}
+                                            >
+                                                <div className={styles.crossLinkArrow}>{direction}</div>
+                                                <div className={styles.crossLinkContent}>
+                                                    <div className={styles.crossLinkMeta}>
+                                                        <span className={`${styles.layerBadgeLg} ${styles[LAYER_STYLE_MAP[linked?.layer]]}`}>
+                                                            {LAYER_LABELS[linked?.layer] || linked?.layer}
+                                                        </span>
+                                                        <span className={styles.crossLinkType}>{link.link_type}</span>
+                                                    </div>
+                                                    <div className={styles.crossLinkSource}>
+                                                        {linkedAuthor && `${linkedAuthor}, `}
+                                                        <em>{linked?.works?.title}</em>
+                                                    </div>
+                                                    <blockquote className={styles.crossLinkQuote}>
+                                                        &ldquo;{linked?.content?.substring(0, 200)}...&rdquo;
+                                                    </blockquote>
+                                                    {link.commentary && (
+                                                        <p className={styles.crossLinkCommentary}>{link.commentary}</p>
+                                                    )}
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
+                                </section>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
