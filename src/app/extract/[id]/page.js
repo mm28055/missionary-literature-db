@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import styles from './extract.module.css';
 
+export const dynamic = 'force-dynamic';
+
 const LAYER_LABELS = {
     missionary: 'Missionary',
     bureaucratic: 'Bureaucratic',

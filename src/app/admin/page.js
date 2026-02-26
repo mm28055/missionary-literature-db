@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server';
 import LogoutButton from './LogoutButton';
 import styles from './admin.module.css';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: 'Admin Dashboard — Missionary Literature Database',
 };
