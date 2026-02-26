@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import LogoutButton from './LogoutButton';
 import styles from './admin.module.css';
@@ -11,18 +10,9 @@ export const metadata = {
 };
 
 export default async function AdminPage() {
-    let user = null;
-    try {
-        const supabase = await createClient();
-        const { data } = await supabase.auth.getUser();
-        user = data?.user;
-    } catch {
-        // Supabase not configured
-    }
-
-    if (!user) {
-        redirect('/login');
-    }
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    const user = data?.user;
 
     const sections = [
         {
