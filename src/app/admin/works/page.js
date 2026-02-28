@@ -5,6 +5,12 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import styles from '../admin.module.css';
 
+const LAYERS = [
+    { value: 'missionary', label: 'Missionary' },
+    { value: 'bureaucratic', label: 'Bureaucratic' },
+    { value: 'reform', label: 'Reform / Response' },
+];
+
 export default function ManageWorksPage() {
     const [works, setWorks] = useState([]);
     const [missionaries, setMissionaries] = useState([]);
@@ -18,7 +24,11 @@ export default function ManageWorksPage() {
     const [yearPublished, setYearPublished] = useState('');
     const [publisher, setPublisher] = useState('');
     const [biblioInfo, setBiblioInfo] = useState('');
+    const [author, setAuthor] = useState('');
+    const [layer, setLayer] = useState('missionary');
     const [missionaryId, setMissionaryId] = useState('');
+    const [pdfUrl, setPdfUrl] = useState('');
+    const [uploadingPdf, setUploadingPdf] = useState(false);
     const [editingId, setEditingId] = useState(null);
 
     const supabase = createClient();
@@ -39,8 +49,38 @@ export default function ManageWorksPage() {
 
     const resetForm = () => {
         setTitle(''); setYearPublished(''); setPublisher('');
-        setBiblioInfo(''); setMissionaryId(''); setEditingId(null);
+        setBiblioInfo(''); setAuthor(''); setLayer('missionary');
+        setMissionaryId(''); setPdfUrl(''); setEditingId(null);
         setError(''); setSuccess('');
+    };
+
+    const handlePdfUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.type !== 'application/pdf') {
+            setError('Please upload a PDF file.');
+            return;
+        }
+        setUploadingPdf(true);
+        setError('');
+        try {
+            const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+            const { error: uploadError } = await supabase.storage
+                .from('pdfs')
+                .upload(fileName, file, { contentType: 'application/pdf' });
+            if (uploadError) throw uploadError;
+            const { data: urlData } = supabase.storage
+                .from('pdfs')
+                .getPublicUrl(fileName);
+            setPdfUrl(urlData.publicUrl);
+        } catch (err) {
+            setError('PDF upload failed: ' + (err.message || 'Unknown error'));
+        }
+        setUploadingPdf(false);
+    };
+
+    const removePdf = () => {
+        setPdfUrl('');
     };
 
     const handleSubmit = async (e) => {
@@ -51,7 +91,10 @@ export default function ManageWorksPage() {
             year_published: yearPublished ? parseInt(yearPublished) : null,
             publisher: publisher || null,
             bibliographic_info: biblioInfo || null,
+            author: author || null,
+            layer,
             missionary_id: missionaryId || null,
+            pdf_url: pdfUrl || null,
         };
 
         try {
@@ -72,7 +115,9 @@ export default function ManageWorksPage() {
     const handleEdit = (w) => {
         setTitle(w.title); setYearPublished(w.year_published?.toString() || '');
         setPublisher(w.publisher || ''); setBiblioInfo(w.bibliographic_info || '');
-        setMissionaryId(w.missionary_id || ''); setEditingId(w.id); setSuccess('');
+        setAuthor(w.author || ''); setLayer(w.layer || 'missionary');
+        setMissionaryId(w.missionary_id || ''); setPdfUrl(w.pdf_url || '');
+        setEditingId(w.id); setSuccess('');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -100,7 +145,7 @@ export default function ManageWorksPage() {
                             placeholder='e.g. "A View of the History, Literature, and Mythology of the Hindoos"' required />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-lg)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-lg)' }}>
                         <div className="form-group">
                             <label className="form-label">Year Published</label>
                             <input className="form-input" type="number" value={yearPublished} onChange={(e) => setYearPublished(e.target.value)} placeholder="e.g. 1822" />
@@ -109,20 +154,67 @@ export default function ManageWorksPage() {
                             <label className="form-label">Publisher</label>
                             <input className="form-input" value={publisher} onChange={(e) => setPublisher(e.target.value)} placeholder="e.g. Serampore Mission Press" />
                         </div>
+                        <div className="form-group">
+                            <label className="form-label">Layer</label>
+                            <select className="form-select" value={layer} onChange={(e) => setLayer(e.target.value)}>
+                                {LAYERS.map(l => (
+                                    <option key={l.value} value={l.value}>{l.label}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Author (Missionary)</label>
-                        <select className="form-select" value={missionaryId} onChange={(e) => setMissionaryId(e.target.value)}>
-                            <option value="">Select missionary...</option>
-                            {missionaries.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-                        </select>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-lg)' }}>
+                        <div className="form-group">
+                            <label className="form-label">Missionary Author</label>
+                            <select className="form-select" value={missionaryId} onChange={(e) => setMissionaryId(e.target.value)}>
+                                <option value="">Select missionary...</option>
+                                {missionaries.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Non-Missionary Author</label>
+                            <input className="form-input" value={author} onChange={(e) => setAuthor(e.target.value)}
+                                placeholder="For bureaucratic/reform sources" />
+                        </div>
                     </div>
 
                     <div className="form-group">
                         <label className="form-label">Bibliographic Information</label>
                         <textarea className="form-textarea" value={biblioInfo} onChange={(e) => setBiblioInfo(e.target.value)}
                             placeholder="Full bibliographic citation, edition details, etc." style={{ minHeight: '100px' }} />
+                    </div>
+
+                    {/* PDF Upload */}
+                    <div className="form-group">
+                        <label className="form-label">PDF Document</label>
+                        {pdfUrl ? (
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 'var(--space-md)',
+                                padding: 'var(--space-sm) var(--space-md)',
+                                background: 'rgba(56, 161, 140, 0.06)',
+                                border: '1px solid rgba(56, 161, 140, 0.2)',
+                                borderRadius: 'var(--radius-sm)',
+                            }}>
+                                <span style={{ fontSize: '1.2rem' }}>📄</span>
+                                <span style={{ flex: 1, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>PDF uploaded</span>
+                                <button type="button" className="btn btn-ghost" onClick={removePdf}
+                                    style={{ fontSize: '0.8rem', padding: '2px 8px', color: '#e74c3c' }}>Remove</button>
+                            </div>
+                        ) : (
+                            <div>
+                                <input
+                                    type="file"
+                                    accept=".pdf,application/pdf"
+                                    onChange={handlePdfUpload}
+                                    disabled={uploadingPdf}
+                                    style={{ fontSize: '0.85rem' }}
+                                />
+                                {uploadingPdf && <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginLeft: 'var(--space-sm)' }}>Uploading...</span>}
+                            </div>
+                        )}
                     </div>
 
                     <div className={styles['admin-form-actions']}>
@@ -145,13 +237,22 @@ export default function ManageWorksPage() {
                             {works.map((w) => (
                                 <div key={w.id} className={styles['admin-list-item']}>
                                     <div className={styles['admin-list-item-info']}>
-                                        <div className={styles['admin-list-item-title']}>{w.title}</div>
+                                        <div className={styles['admin-list-item-title']}>
+                                            {w.title}
+                                            {w.pdf_url && <span style={{ marginLeft: '8px', fontSize: '0.72rem', color: '#38a18c', fontWeight: 500 }}>📄 PDF</span>}
+                                        </div>
                                         <div className={styles['admin-list-item-meta']}>
-                                            {w.missionaries?.name || 'Unknown author'}
+                                            {w.missionaries?.name || w.author || 'Unknown author'}
                                             {w.year_published && ` · ${w.year_published}`}
+                                            {w.layer && w.layer !== 'missionary' && ` · ${w.layer}`}
                                         </div>
                                     </div>
                                     <div className={styles['admin-list-item-actions']}>
+                                        {w.pdf_url && (
+                                            <Link href={`/admin/works/${w.id}/extract`} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '4px 10px' }}>
+                                                Extract Passages
+                                            </Link>
+                                        )}
                                         <button className="btn btn-ghost" onClick={() => handleEdit(w)}>Edit</button>
                                         <button className="btn btn-danger" onClick={() => handleDelete(w.id)} style={{ padding: '4px 10px', fontSize: '0.8rem' }}>Delete</button>
                                     </div>

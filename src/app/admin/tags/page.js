@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import DeleteTagModal from '../DeleteTagModal';
 import styles from '../admin.module.css';
 
 const TAG_TYPES = [
@@ -14,6 +15,7 @@ export default function AdminTagsPage() {
     const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingTag, setEditingTag] = useState(null);
+    const [deletingTag, setDeletingTag] = useState(null);
     const [form, setForm] = useState({ name: '', description: '', tag_type: 'theme', parent_id: '', introduction: '' });
 
     const supabase = createClient();
@@ -69,10 +71,8 @@ export default function AdminTagsPage() {
         });
     };
 
-    const handleDelete = async (tag) => {
-        if (!confirm(`Delete "${tag.name}"? This will also delete any sub-themes under it.`)) return;
-        await supabase.from('tags').delete().eq('id', tag.id);
-        loadTags();
+    const handleDelete = (tag) => {
+        setDeletingTag(tag);
     };
 
     const renderTagRow = (tag, indent = false) => (
@@ -372,6 +372,20 @@ export default function AdminTagsPage() {
                         ))}
                     </div>
                 </>
+            )}
+
+            {/* Delete Tag Modal */}
+            {deletingTag && (
+                <DeleteTagModal
+                    tag={deletingTag}
+                    tags={tags}
+                    supabase={supabase}
+                    onClose={() => setDeletingTag(null)}
+                    onDeleted={() => {
+                        setDeletingTag(null);
+                        loadTags();
+                    }}
+                />
             )}
         </div>
     );

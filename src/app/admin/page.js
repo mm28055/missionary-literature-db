@@ -14,6 +14,17 @@ export default async function AdminPage() {
     const { data } = await supabase.auth.getUser();
     const user = data?.user;
 
+    // Check for untagged extracts (extracts with no entries in extract_tags)
+    const { data: allExtracts } = await supabase
+        .from('extracts')
+        .select('id');
+    const { data: taggedExtractIds } = await supabase
+        .from('extract_tags')
+        .select('extract_id');
+
+    const taggedSet = new Set((taggedExtractIds || []).map(r => r.extract_id));
+    const untaggedCount = (allExtracts || []).filter(e => !taggedSet.has(e.id)).length;
+
     const sections = [
         {
             title: 'Extracts',
@@ -70,6 +81,33 @@ export default async function AdminPage() {
                     </div>
                 </div>
 
+                {/* Untagged extracts warning */}
+                {untaggedCount > 0 && (
+                    <div style={{
+                        background: 'rgba(220, 53, 69, 0.06)',
+                        border: '1px solid rgba(220, 53, 69, 0.2)',
+                        borderLeft: '4px solid #e74c3c',
+                        borderRadius: 'var(--radius-md)',
+                        padding: 'var(--space-md) var(--space-lg)',
+                        marginBottom: 'var(--space-xl)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}>
+                        <span style={{ fontSize: '0.9rem' }}>
+                            ⚠️ <strong>{untaggedCount} untagged extract{untaggedCount !== 1 ? 's' : ''}</strong> — {untaggedCount !== 1 ? 'these' : 'this'} won&apos;t appear under any theme on the website.
+                        </span>
+                        <Link href="/admin/extracts" style={{
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: 'var(--accent-gold)',
+                            whiteSpace: 'nowrap',
+                        }}>
+                            View &amp; fix →
+                        </Link>
+                    </div>
+                )}
+
                 <div className={`${styles['admin-grid']} stagger-children`}>
                     {sections.map((section) => (
                         <Link
@@ -87,3 +125,4 @@ export default async function AdminPage() {
         </div>
     );
 }
+

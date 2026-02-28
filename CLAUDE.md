@@ -49,10 +49,12 @@ src/
 │       ├── page.js            # Admin dashboard
 │       ├── LogoutButton.js    # Client component — signOut
 │       ├── missionaries/page.js
-│       ├── works/page.js
+│       ├── works/page.js       # Includes PDF upload, layer, author fields
+│       ├── works/[id]/extract/page.js # PDF viewer + extract form (split-screen)
 │       ├── extracts/page.js   # Includes tag assignment
 │       ├── tags/page.js       # Includes scholarly introduction editor
-│       └── denominations/page.js
+│       ├── denominations/page.js
+│       └── DeleteTagModal.js   # Impact-aware tag deletion modal
 ├── components/
 │   ├── Navbar.js / Navbar.module.css
 │   └── Footer.js / Footer.module.css
@@ -64,7 +66,8 @@ supabase/
 └── migrations/
     ├── 001_initial_schema.sql  # Full schema + RLS + seed data
     ├── 002_taxonomy_upgrade.sql # Layers, commentary, extract_links, expanded taxonomy
-    └── 003_theme_navigation.sql # Slug & introduction fields on tags
+    ├── 003_theme_navigation.sql # Slug & introduction fields on tags
+    └── 007_works_pdf_url.sql # PDF URL field on works
 ```
 
 ---
@@ -101,6 +104,7 @@ All tables use UUID primary keys. Row Level Security (RLS) is enabled on all tab
 - `author` TEXT — for non-missionary sources (census, reform texts)
 - `layer` TEXT DEFAULT 'missionary' — missionary | bureaucratic | reform
 - `missionary_id` UUID FK → missionaries (CASCADE DELETE)
+- `pdf_url` TEXT — URL of uploaded PDF in Supabase Storage
 - `created_at` TIMESTAMPTZ
 
 **`tags`** — hierarchical thematic taxonomy
