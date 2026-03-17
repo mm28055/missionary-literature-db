@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -37,6 +37,13 @@ export default function SubthemePage() {
     const [sortOrder, setSortOrder] = useState('newest');
     const [currentPage, setCurrentPage] = useState(1);
 
+    // Expand state
+    const [expandedId, setExpandedId] = useState(null);
+    const [crossLinks, setCrossLinks] = useState([]);
+    const [crossLinkCounts, setCrossLinkCounts] = useState({});
+    const [loadingLinks, setLoadingLinks] = useState(false);
+
+    const expandedRef = useRef(null);
     const supabase = createClient();
 
     useEffect(() => {
@@ -45,6 +52,8 @@ export default function SubthemePage() {
 
     const loadData = async () => {
         setLoading(true);
+        setExpandedId(null);
+        setCrossLinks([]);
 
         // Load parent theme by slug
         let { data: parent } = await supabase
@@ -85,10 +94,75 @@ export default function SubthemePage() {
                 .filter(Boolean);
 
             setExtracts(extractList);
+
+            // Fetch cross-link counts for indicators
+            const extractIds = extractList.map(e => e.id);
+            if (extractIds.length > 0) {
+                try {
+                    const { data: links } = await supabase
+                        .from('extract_links')
+                        .select('source_extract_id, target_extract_id')
+                        .or(extractIds.map(id => `source_extract_id.eq.${id}`).join(',') +
+                            ',' + extractIds.map(id => `target_extract_id.eq.${id}`).join(','));
+
+                    const counts = {};
+                    (links || []).forEach(link => {
+                        if (extractIds.includes(link.source_extract_id)) {
+                            counts[link.source_extract_id] = (counts[link.source_extract_id] || 0) + 1;
+                        }
+                        if (extractIds.includes(link.target_extract_id)) {
+                            counts[link.target_extract_id] = (counts[link.target_extract_id] || 0) + 1;
+                        }
+                    });
+                    setCrossLinkCounts(counts);
+                } catch (e) {
+                    // extract_links table may not exist yet
+                }
+            }
         }
 
         setLoading(false);
     };
+
+    // Handle expand/collapse
+    const handleExtractClick = useCallback(async (extractId) => {
+        if (expandedId === extractId) {
+            // Collapse
+            setExpandedId(null);
+            setCrossLinks([]);
+            return;
+        }
+
+        setExpandedId(extractId);
+        setCrossLinks([]);
+        setLoadingLinks(true);
+
+        // Fetch cross-links for this extract
+        try {
+            const { data, error } = await supabase
+                .from('extract_links')
+                .select(`
+                    *,
+                    source:extracts!extract_links_source_extract_id_fkey(id, content, layer,
+                        works(title, author, missionaries(name))),
+                    target:extracts!extract_links_target_extract_id_fkey(id, content, layer,
+                        works(title, author, missionaries(name)))
+                `)
+                .or(`source_extract_id.eq.${extractId},target_extract_id.eq.${extractId}`);
+            if (!error) setCrossLinks(data || []);
+        } catch (e) {
+            // extract_links table may not exist yet
+        }
+
+        setLoadingLinks(false);
+
+        // Scroll to expanded card after a small delay
+        setTimeout(() => {
+            if (expandedRef.current) {
+                expandedRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    }, [expandedId, supabase]);
 
     // Available layers (only show tabs for layers with content)
     const layerCounts = extracts.reduce((acc, e) => {
@@ -129,11 +203,13 @@ export default function SubthemePage() {
     const handleLayerChange = (layer) => {
         setSelectedLayer(layer);
         setCurrentPage(1);
+        setExpandedId(null);
     };
 
     const handleSortChange = (e) => {
         setSortOrder(e.target.value);
         setCurrentPage(1);
+        setExpandedId(null);
     };
 
     if (loading) {
@@ -236,12 +312,18 @@ export default function SubthemePage() {
                                     const extractTags = (extract.extract_tags || []).map(et => et.tags).filter(Boolean);
                                     const strategyTags = extractTags.filter(t => t.tag_type === 'strategy');
                                     const sourceTags = extractTags.filter(t => t.tag_type === 'source_type');
+                                    const themeTags = extractTags.filter(t => t.tag_type === 'theme');
+                                    const isExpanded = expandedId === extract.id;
+                                    const hasCommentary = !!extract.commentary;
+                                    const linkCount = crossLinkCounts[extract.id] || 0;
 
                                     return (
-                                        <Link
+                                        <div
                                             key={extract.id}
-                                            href={`/extract/${extract.id}`}
-                                            className={styles.extractCard}
+                                            ref={isExpanded ? expandedRef : null}
+                                            className={`${styles.extractCard} ${isExpanded ? styles.extractCardExpanded : ''}`}
+                                            onClick={() => handleExtractClick(extract.id)}
+                                            style={{ cursor: 'pointer' }}
                                         >
                                             <div className={styles.extractAttribution}>
                                                 <span className={styles.extractAuthor}>{getAuthor(extract)}</span>
@@ -266,7 +348,8 @@ export default function SubthemePage() {
                                                 <div className={styles.extractRef}>— {extract.source_reference}</div>
                                             )}
 
-                                            {(strategyTags.length > 0 || sourceTags.length > 0) && (
+                                            {/* Tags on card (when not expanded) */}
+                                            {!isExpanded && (strategyTags.length > 0 || sourceTags.length > 0) && (
                                                 <div className={styles.extractTags}>
                                                     {strategyTags.map(t => (
                                                         <span key={t.id} className={styles.strategyTag}>{t.name}</span>
@@ -276,7 +359,135 @@ export default function SubthemePage() {
                                                     ))}
                                                 </div>
                                             )}
-                                        </Link>
+
+                                            {/* Indicators */}
+                                            {(hasCommentary || linkCount > 0) && !isExpanded && (
+                                                <div className={styles.indicators}>
+                                                    {hasCommentary && (
+                                                        <span className={styles.indicatorCommentary}>
+                                                            <span className={styles.indicatorIcon}>✦</span> Commentary
+                                                        </span>
+                                                    )}
+                                                    {linkCount > 0 && (
+                                                        <span className={styles.indicatorLinks}>
+                                                            <span className={styles.indicatorIcon}>↯</span> {linkCount} connection{linkCount !== 1 ? 's' : ''}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Expanded content */}
+                                            {isExpanded && (
+                                                <div className={styles.expandedWrapper} onClick={e => e.stopPropagation()}>
+                                                    {/* Main content: cross-links below */}
+                                                    <div className={styles.expandedMainContent}>
+                                                        {/* Cross-links */}
+                                                        {loadingLinks && (
+                                                            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontStyle: 'italic' }}>
+                                                                Loading connections…
+                                                            </p>
+                                                        )}
+                                                        {!loadingLinks && crossLinks.length > 0 && (
+                                                            <div className={styles.crossLinksInline}>
+                                                                <div className={styles.crossLinksTitle}>
+                                                                    ↯ Tracing the Causal Chain
+                                                                </div>
+                                                                {crossLinks.map(link => {
+                                                                    const isSource = link.source_extract_id === extract.id;
+                                                                    const linked = isSource ? link.target : link.source;
+                                                                    const direction = isSource ? '→' : '←';
+                                                                    const linkedAuthor = linked?.works?.missionaries?.name || linked?.works?.author || '';
+
+                                                                    return (
+                                                                        <Link
+                                                                            key={link.id}
+                                                                            href={`/extract/${linked?.id}`}
+                                                                            className={styles.crossLink}
+                                                                            onClick={e => e.stopPropagation()}
+                                                                        >
+                                                                            <div className={styles.crossLinkArrow}>{direction}</div>
+                                                                            <div className={styles.crossLinkContent}>
+                                                                                <div className={styles.crossLinkMeta}>
+                                                                                    <span className={`${styles.extractLayerBadge} ${styles[LAYER_STYLE_MAP[linked?.layer]]}`}>
+                                                                                        {LAYER_LABELS[linked?.layer] || linked?.layer}
+                                                                                    </span>
+                                                                                    <span className={styles.crossLinkType}>{link.link_type}</span>
+                                                                                </div>
+                                                                                <div className={styles.crossLinkSource}>
+                                                                                    {linkedAuthor && `${linkedAuthor}, `}
+                                                                                    <em>{linked?.works?.title}</em>
+                                                                                </div>
+                                                                                <blockquote className={styles.crossLinkQuote}>
+                                                                                    &ldquo;{linked?.content?.substring(0, 200)}...&rdquo;
+                                                                                </blockquote>
+                                                                                {link.commentary && (
+                                                                                    <p className={styles.crossLinkCommentary}>{link.commentary}</p>
+                                                                                )}
+                                                                            </div>
+                                                                        </Link>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Full page link */}
+                                                        <Link
+                                                            href={`/extract/${extract.id}`}
+                                                            className={styles.fullPageLink}
+                                                            onClick={e => e.stopPropagation()}
+                                                        >
+                                                            Open full page →
+                                                        </Link>
+                                                    </div>
+
+                                                    {/* Commentary side panel */}
+                                                    <div className={styles.commentaryPanel}>
+                                                        <div className={styles.commentaryLabel}>✦ Commentary</div>
+                                                        {hasCommentary ? (
+                                                            <div className={styles.commentaryText}>{extract.commentary}</div>
+                                                        ) : (
+                                                            <div className={styles.noCommentary}>No commentary yet.</div>
+                                                        )}
+
+                                                        {/* Tags in panel */}
+                                                        {(themeTags.length > 0 || strategyTags.length > 0 || sourceTags.length > 0) && (
+                                                            <div className={styles.panelTags}>
+                                                                {themeTags.length > 0 && (
+                                                                    <>
+                                                                        <div className={styles.panelTagsLabel}>Themes</div>
+                                                                        <div className={styles.panelTagsList}>
+                                                                            {themeTags.map(t => (
+                                                                                <span key={t.id} className={styles.themeTag}>{t.name}</span>
+                                                                            ))}
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                                {strategyTags.length > 0 && (
+                                                                    <>
+                                                                        <div className={styles.panelTagsLabel} style={{ marginTop: 'var(--space-sm)' }}>Strategies</div>
+                                                                        <div className={styles.panelTagsList}>
+                                                                            {strategyTags.map(t => (
+                                                                                <span key={t.id} className={styles.strategyTag}>{t.name}</span>
+                                                                            ))}
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                                {sourceTags.length > 0 && (
+                                                                    <>
+                                                                        <div className={styles.panelTagsLabel} style={{ marginTop: 'var(--space-sm)' }}>Source Type</div>
+                                                                        <div className={styles.panelTagsList}>
+                                                                            {sourceTags.map(t => (
+                                                                                <span key={t.id} className={styles.sourceTag}>{t.name}</span>
+                                                                            ))}
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     );
                                 })}
                             </div>
