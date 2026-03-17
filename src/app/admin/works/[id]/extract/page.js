@@ -71,15 +71,48 @@ export default function ExtractFromWorkPage() {
         );
     };
 
-    // Handle text selection from PDF viewer
+    // Handle text selection from PDF viewer — append mode
     const handleTextSelected = useCallback((text, pageNum) => {
-        setForm(f => ({
-            ...f,
-            content: text,
-            source_reference: `p. ${pageNum}`,
-        }));
+        setForm(f => {
+            if (!f.content.trim()) {
+                // First selection: set content and page ref
+                return { ...f, content: text, source_reference: `p. ${pageNum}` };
+            }
+            // Subsequent selection: append with space
+            const newContent = f.content + ' ' + text;
+
+            // Smart source_reference: merge page numbers
+            const existingRef = f.source_reference || '';
+            let newRef = existingRef;
+            const singleMatch = existingRef.match(/^p\.\s*(\d+)$/);
+            const rangeMatch = existingRef.match(/^pp\.\s*(\d+)[–-](\d+)$/);
+            if (singleMatch) {
+                const startPage = parseInt(singleMatch[1], 10);
+                if (pageNum !== startPage) {
+                    newRef = `pp. ${Math.min(startPage, pageNum)}–${Math.max(startPage, pageNum)}`;
+                }
+            } else if (rangeMatch) {
+                const startPage = parseInt(rangeMatch[1], 10);
+                const endPage = parseInt(rangeMatch[2], 10);
+                const newStart = Math.min(startPage, pageNum);
+                const newEnd = Math.max(endPage, pageNum);
+                newRef = newStart === newEnd ? `p. ${newStart}` : `pp. ${newStart}–${newEnd}`;
+            } else {
+                newRef = `p. ${pageNum}`;
+            }
+
+            return { ...f, content: newContent, source_reference: newRef };
+        });
         setSavedMessage('');
         setEditingExtractId(null);
+
+        // Flash the textarea to signal text was appended
+        const textarea = document.querySelector('[data-extract-content]');
+        if (textarea) {
+            textarea.style.transition = 'box-shadow 0.15s ease';
+            textarea.style.boxShadow = '0 0 0 3px rgba(184, 132, 58, 0.4)';
+            setTimeout(() => { textarea.style.boxShadow = 'none'; }, 600);
+        }
     }, []);
 
     const handleSubmit = async (e) => {
@@ -205,7 +238,7 @@ export default function ExtractFromWorkPage() {
                 {/* Split-screen layout */}
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: work.pdf_url ? '1fr 1fr' : '1fr',
+                    gridTemplateColumns: work.pdf_url ? '60fr 40fr' : '1fr',
                     gap: 'var(--space-xl)',
                     alignItems: 'start',
                 }}>
@@ -242,19 +275,47 @@ export default function ExtractFromWorkPage() {
                             <form onSubmit={handleSubmit}>
                                 {/* Content */}
                                 <div style={{ marginBottom: 'var(--space-md)' }}>
-                                    <label className={styles.label}>Selected Passage *</label>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                        <label className={styles.label} style={{ margin: 0 }}>Selected Passage *</label>
+                                        {form.content && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setForm(f => ({ ...f, content: '', source_reference: '' }))}
+                                                style={{
+                                                    background: 'none', border: 'none', cursor: 'pointer',
+                                                    fontSize: '0.75rem', color: 'var(--text-muted)',
+                                                    display: 'flex', alignItems: 'center', gap: '3px',
+                                                    padding: '2px 6px', borderRadius: '4px',
+                                                    transition: 'all 0.15s ease',
+                                                }}
+                                                onMouseEnter={e => e.target.style.color = '#e74c3c'}
+                                                onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
+                                            >
+                                                ✕ Clear
+                                            </button>
+                                        )}
+                                    </div>
                                     <textarea
+                                        data-extract-content
                                         className={styles.textarea || 'form-textarea'}
                                         value={form.content}
                                         onChange={(e) => setForm({ ...form, content: e.target.value })}
                                         rows={8}
                                         required
                                         placeholder={work.pdf_url
-                                            ? "Select text in the PDF, or paste a passage here..."
+                                            ? "Select text in the PDF — selections will be appended here"
                                             : "Paste the extract passage here..."
                                         }
                                         style={{ width: '100%', resize: 'vertical' }}
                                     />
+                                    {work.pdf_url && form.content && (
+                                        <div style={{
+                                            fontSize: '0.72rem', color: 'var(--text-muted)',
+                                            marginTop: '4px', fontStyle: 'italic',
+                                        }}>
+                                            Selecting more text in the PDF will append to this field.
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Source ref + Layer */}
