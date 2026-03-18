@@ -390,27 +390,20 @@ export default function ThemesPage() {
 
                                         return (
                                             <div key={parent.id} className={styles.themeParentItem}>
-                                                <div className={`${styles.themeParentRow} ${isSelected ? styles.themeParentRowSelected : ''}`}>
+                                                <div
+                                                    className={`${styles.themeParentRow} ${isSelected ? styles.themeParentRowSelected : ''}`}
+                                                    onClick={() => {
+                                                        if (isSelected) { setSelectedTheme(null); setSelectedThemeType(null); }
+                                                        else { setSelectedTheme(parent.id); setSelectedThemeType('parent'); setIntroCollapsed(false); setExpandedThemes(p => ({ ...p, [parent.id]: true })); }
+                                                    }}
+                                                >
                                                     {children.length > 0 && (
                                                         <button
                                                             className={`${styles.themeExpandBtn} ${isExpanded ? styles.themeExpandBtnOpen : ''}`}
                                                             onClick={(e) => { e.stopPropagation(); setExpandedThemes(p => ({ ...p, [parent.id]: !p[parent.id] })); }}
                                                         >›</button>
                                                     )}
-                                                    <input
-                                                        type="radio"
-                                                        className={styles.themeRadio}
-                                                        name="themeFilter"
-                                                        checked={isSelected}
-                                                        onChange={() => {
-                                                            if (isSelected) { setSelectedTheme(null); setSelectedThemeType(null); }
-                                                            else { setSelectedTheme(parent.id); setSelectedThemeType('parent'); setIntroCollapsed(false); }
-                                                        }}
-                                                    />
-                                                    <span className={styles.themeParentName} onClick={() => {
-                                                        if (isSelected) { setSelectedTheme(null); setSelectedThemeType(null); }
-                                                        else { setSelectedTheme(parent.id); setSelectedThemeType('parent'); setIntroCollapsed(false); setExpandedThemes(p => ({ ...p, [parent.id]: true })); }
-                                                    }}>{parent.name}</span>
+                                                    <span className={styles.themeParentName}>{parent.name}</span>
                                                     <span className={styles.themeCount}>({themeExtractCounts[parent.id] || 0})</span>
                                                 </div>
 
