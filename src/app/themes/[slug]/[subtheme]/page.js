@@ -83,7 +83,7 @@ export default function SubthemePage() {
                 .select(`
                     extracts(
                         *,
-                        works(title, year_published, author, layer, missionaries(name, denominations(name))),
+                        works(title, year_published, author, layer, source_type, missionaries(name, denominations(name))),
                         extract_tags(tags(id, name, tag_type, parent_id))
                     )
                 `)
@@ -311,7 +311,7 @@ export default function SubthemePage() {
                                 {paged.map(extract => {
                                     const extractTags = (extract.extract_tags || []).map(et => et.tags).filter(Boolean);
                                     const strategyTags = extractTags.filter(t => t.tag_type === 'strategy');
-                                    const sourceTags = extractTags.filter(t => t.tag_type === 'source_type');
+                                    const sourceType = extract.works?.source_type;
                                     const themeTags = extractTags.filter(t => t.tag_type === 'theme');
                                     const isExpanded = expandedId === extract.id;
                                     const hasCommentary = !!extract.commentary;
@@ -349,14 +349,14 @@ export default function SubthemePage() {
                                             )}
 
                                             {/* Tags on card (when not expanded) */}
-                                            {!isExpanded && (strategyTags.length > 0 || sourceTags.length > 0) && (
+                                            {!isExpanded && (strategyTags.length > 0 || sourceType) && (
                                                 <div className={styles.extractTags}>
                                                     {strategyTags.map(t => (
                                                         <span key={t.id} className={styles.strategyTag}>{t.name}</span>
                                                     ))}
-                                                    {sourceTags.map(t => (
-                                                        <span key={t.id} className={styles.sourceTag}>{t.name}</span>
-                                                    ))}
+                                                    {sourceType && (
+                                                        <span className={styles.sourceTag}>{sourceType}</span>
+                                                    )}
                                                 </div>
                                             )}
 
@@ -450,7 +450,7 @@ export default function SubthemePage() {
                                                         )}
 
                                                         {/* Tags in panel */}
-                                                        {(themeTags.length > 0 || strategyTags.length > 0 || sourceTags.length > 0) && (
+                                                        {(themeTags.length > 0 || strategyTags.length > 0 || sourceType) && (
                                                             <div className={styles.panelTags}>
                                                                 {themeTags.length > 0 && (
                                                                     <>
@@ -472,13 +472,11 @@ export default function SubthemePage() {
                                                                         </div>
                                                                     </>
                                                                 )}
-                                                                {sourceTags.length > 0 && (
+                                                                {sourceType && (
                                                                     <>
                                                                         <div className={styles.panelTagsLabel} style={{ marginTop: 'var(--space-sm)' }}>Source Type</div>
                                                                         <div className={styles.panelTagsList}>
-                                                                            {sourceTags.map(t => (
-                                                                                <span key={t.id} className={styles.sourceTag}>{t.name}</span>
-                                                                            ))}
+                                                                            <span className={styles.sourceTag}>{sourceType}</span>
                                                                         </div>
                                                                     </>
                                                                 )}

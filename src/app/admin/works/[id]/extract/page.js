@@ -63,7 +63,6 @@ export default function ExtractFromWorkPage() {
     const parentThemes = tags.filter(t => t.tag_type === 'theme' && !t.parent_id);
     const getChildren = (parentId) => tags.filter(t => t.tag_type === 'theme' && t.parent_id === parentId);
     const strategies = tags.filter(t => t.tag_type === 'strategy');
-    const sourceTypes = tags.filter(t => t.tag_type === 'source_type');
 
     const toggleTag = (tagId) => {
         setSelectedTagIds(prev =>
@@ -466,39 +465,6 @@ export default function ExtractFromWorkPage() {
                                             </div>
                                         </div>
 
-                                        {/* Source Types */}
-                                        <div style={{
-                                            border: '1px solid var(--border)',
-                                            borderLeft: '3px solid #64748b',
-                                            borderRadius: '6px', overflow: 'hidden', background: 'var(--surface)',
-                                        }}>
-                                            <div style={{
-                                                padding: '6px 12px',
-                                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                                background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid var(--border)',
-                                            }}>
-                                                <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b' }}>✦ Source Types</span>
-                                            </div>
-                                            <div style={{ padding: '6px 12px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                {sourceTypes.map(s => {
-                                                    const isSelected = selectedTagIds.includes(s.id);
-                                                    return (
-                                                        <button key={s.id} type="button" onClick={() => toggleTag(s.id)} style={{
-                                                            display: 'inline-flex', alignItems: 'center', gap: '4px',
-                                                            padding: '3px 10px', fontSize: '0.75rem',
-                                                            border: isSelected ? '2px solid #64748b' : '1px solid var(--border)',
-                                                            borderRadius: '16px',
-                                                            background: isSelected ? 'rgba(100,116,139,0.1)' : 'transparent',
-                                                            color: isSelected ? '#64748b' : 'var(--text-secondary)',
-                                                            fontWeight: isSelected ? 600 : 400,
-                                                            cursor: 'pointer', transition: 'all 0.15s ease',
-                                                        }}>
-                                                            {isSelected ? '✓ ' : ''}{s.name}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
 

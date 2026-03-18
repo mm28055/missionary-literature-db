@@ -31,7 +31,7 @@ export default function BrowsePage() {
             const [extractsRes, tagsRes] = await Promise.all([
                 supabase.from('extracts').select(`
                     *,
-                    works(title, year_published, author, layer, missionaries(name, denominations(name))),
+                    works(title, year_published, author, layer, source_type, missionaries(name, denominations(name))),
                     extract_tags(tags(id, name, tag_type, parent_id))
                 `).order('created_at', { ascending: false }),
 
@@ -118,7 +118,7 @@ export default function BrowsePage() {
         const isExpanded = expandedCard === extract.id;
         const extractTags = (extract.extract_tags || []).map(et => et.tags).filter(Boolean);
         const strategyTags = extractTags.filter(t => t.tag_type === 'strategy');
-        const sourceTags = extractTags.filter(t => t.tag_type === 'source_type');
+        const sourceType = extract.works?.source_type;
         const links = crossLinks[extract.id] || [];
 
         return (
@@ -154,15 +154,15 @@ export default function BrowsePage() {
                     <div className={styles.sourceRef}>— {extract.source_reference}</div>
                 )}
 
-                {/* Strategy + source type tags */}
-                {(strategyTags.length > 0 || sourceTags.length > 0) && (
+                {/* Strategy tags + source type */}
+                {(strategyTags.length > 0 || sourceType) && (
                     <div className={styles.passageTags}>
                         {strategyTags.map(t => (
                             <span key={t.id} className={styles.strategyTag}>{t.name}</span>
                         ))}
-                        {sourceTags.map(t => (
-                            <span key={t.id} className={styles.sourceTag}>{t.name}</span>
-                        ))}
+                        {sourceType && (
+                            <span className={styles.sourceTag}>{sourceType}</span>
+                        )}
                     </div>
                 )}
 

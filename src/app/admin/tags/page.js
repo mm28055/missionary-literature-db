@@ -8,7 +8,6 @@ import styles from '../admin.module.css';
 const TAG_TYPES = [
     { value: 'theme', label: 'Theme' },
     { value: 'strategy', label: 'Discursive Strategy' },
-    { value: 'source_type', label: 'Source Type' },
 ];
 
 export default function AdminTagsPage() {
@@ -31,7 +30,6 @@ export default function AdminTagsPage() {
     const parentThemes = tags.filter(t => t.tag_type === 'theme' && !t.parent_id);
     const subThemes = tags.filter(t => t.tag_type === 'theme' && t.parent_id);
     const strategies = tags.filter(t => t.tag_type === 'strategy');
-    const sourceTypes = tags.filter(t => t.tag_type === 'source_type');
 
     const getChildren = (parentId) => subThemes.filter(t => t.parent_id === parentId);
 
@@ -96,7 +94,7 @@ export default function AdminTagsPage() {
         <div>
             <h1 className={styles['admin-title']}>Thematic Taxonomy</h1>
             <p style={{ color: 'var(--text-muted)', marginBottom: 'var(--space-xl)' }}>
-                Manage parent themes, sub-themes, discursive strategies, and source types.
+                Manage parent themes, sub-themes, and discursive strategies. Source types are now managed on the Works page.
             </p>
 
             {/* Add/Edit Form */}
@@ -309,44 +307,6 @@ export default function AdminTagsPage() {
                         marginBottom: 'var(--space-xl)',
                     }}>
                         {strategies.map((s, si) => (
-                            <div key={s.id} style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                padding: '10px 14px',
-                                borderRadius: '8px',
-                                background: si % 2 === 0 ? 'rgba(0,0,0,0.015)' : 'transparent',
-                                marginBottom: '2px',
-                            }}>
-                                <div>
-                                    <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>{s.name}</span>
-                                    {s.description && (
-                                        <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                                            {s.description.substring(0, 120)}{s.description.length > 120 ? '...' : ''}
-                                        </div>
-                                    )}
-                                </div>
-                                <div style={{ display: 'flex', gap: '4px', flexShrink: 0, marginLeft: '12px' }}>
-                                    <button className="btn btn-ghost" style={{ fontSize: '0.75rem', padding: '3px 8px' }} onClick={() => startEdit(s)}>Edit</button>
-                                    <button className="btn btn-ghost" style={{ fontSize: '0.75rem', padding: '3px 8px', color: '#e74c3c' }} onClick={() => handleDelete(s)}>Delete</button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Source Types */}
-                    <h2 style={{ fontSize: '1.2rem', marginBottom: 'var(--space-md)' }}>
-                        Source Types ({sourceTypes.length})
-                    </h2>
-                    <div style={{
-                        border: '1px solid var(--border)',
-                        borderLeft: '4px solid #64748b',
-                        borderRadius: '10px',
-                        overflow: 'hidden',
-                        background: 'var(--surface)',
-                        padding: '10px 18px',
-                    }}>
-                        {sourceTypes.map((s, si) => (
                             <div key={s.id} style={{
                                 display: 'flex',
                                 justifyContent: 'space-between',

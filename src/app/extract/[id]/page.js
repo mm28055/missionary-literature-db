@@ -83,7 +83,7 @@ export default async function ExtractDetailPage({ params }) {
     const allTags = (extract.extract_tags || []).map(et => et.tags).filter(Boolean);
     const themeTags = allTags.filter(t => t.tag_type === 'theme');
     const strategyTags = allTags.filter(t => t.tag_type === 'strategy');
-    const sourceTags = allTags.filter(t => t.tag_type === 'source_type');
+    const sourceType = extract.works?.source_type;
 
     const author = extract.works?.missionaries?.name || extract.works?.author || 'Unknown';
     const denomination = extract.works?.missionaries?.denominations?.name;
@@ -177,7 +177,7 @@ export default async function ExtractDetailPage({ params }) {
                             )}
 
                             {/* Tags */}
-                            {(themeTags.length > 0 || strategyTags.length > 0 || sourceTags.length > 0) && (
+                            {(themeTags.length > 0 || strategyTags.length > 0 || sourceType) && (
                                 <section className={styles.tagsSection}>
                                     {themeTags.length > 0 && (
                                         <>
@@ -199,13 +199,11 @@ export default async function ExtractDetailPage({ params }) {
                                             </div>
                                         </>
                                     )}
-                                    {sourceTags.length > 0 && (
+                                    {sourceType && (
                                         <>
                                             <div className={styles.tagsLabel}>Source Type</div>
                                             <div className={styles.tagsList}>
-                                                {sourceTags.map(t => (
-                                                    <span key={t.id} className={styles.sourceTag}>{t.name}</span>
-                                                ))}
+                                                <span className={styles.sourceTag}>{sourceType}</span>
                                             </div>
                                         </>
                                     )}

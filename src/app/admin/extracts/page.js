@@ -44,7 +44,6 @@ export default function AdminExtractsPage() {
     const parentThemes = tags.filter(t => t.tag_type === 'theme' && !t.parent_id);
     const getChildren = (parentId) => tags.filter(t => t.tag_type === 'theme' && t.parent_id === parentId);
     const strategies = tags.filter(t => t.tag_type === 'strategy');
-    const sourceTypes = tags.filter(t => t.tag_type === 'source_type');
 
     const toggleTag = (tagId) => {
         setSelectedTagIds(prev =>
@@ -341,58 +340,6 @@ export default function AdminExtractsPage() {
                                 </div>
                             </div>
 
-                            {/* Source Types */}
-                            <div style={{
-                                border: '1px solid var(--border)',
-                                borderLeft: '4px solid #64748b',
-                                borderRadius: '8px',
-                                overflow: 'hidden',
-                                background: 'var(--surface)',
-                            }}>
-                                <div style={{
-                                    padding: '10px 14px',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    borderBottom: '1px solid var(--border)',
-                                    background: 'rgba(0,0,0,0.02)',
-                                }}>
-                                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>
-                                        ✦ Source Types
-                                    </span>
-                                    {sourceTypes.filter(s => selectedTagIds.includes(s.id)).length > 0 && (
-                                        <span style={{ background: '#64748b', color: '#fff', fontSize: '0.68rem', fontWeight: 700, padding: '2px 8px', borderRadius: '10px' }}>
-                                            {sourceTypes.filter(s => selectedTagIds.includes(s.id)).length}
-                                        </span>
-                                    )}
-                                </div>
-                                <div style={{ padding: '10px 14px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                                    {sourceTypes.map(s => {
-                                        const isSelected = selectedTagIds.includes(s.id);
-                                        return (
-                                            <button key={s.id} type="button" onClick={() => toggleTag(s.id)} style={{
-                                                display: 'inline-flex', alignItems: 'center', gap: '5px',
-                                                padding: '5px 12px', fontSize: '0.8rem',
-                                                border: isSelected ? '2px solid #64748b' : '1px solid var(--border)',
-                                                borderRadius: '20px',
-                                                background: isSelected ? 'rgba(100,116,139,0.1)' : 'transparent',
-                                                color: isSelected ? '#64748b' : 'var(--text-secondary)',
-                                                fontWeight: isSelected ? 600 : 400, cursor: 'pointer',
-                                                transition: 'all 0.15s ease',
-                                            }}>
-                                                <span style={{
-                                                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                                    width: '16px', height: '16px', borderRadius: '4px',
-                                                    border: isSelected ? '2px solid #64748b' : '2px solid var(--border)',
-                                                    background: isSelected ? '#64748b' : 'transparent',
-                                                    fontSize: '10px', color: '#fff', flexShrink: 0,
-                                                }}>{isSelected ? '✓' : ''}</span>
-                                                {s.name}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -442,7 +389,7 @@ export default function AdminExtractsPage() {
                                     </p>
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                                         {(extract.extract_tags || []).map(et => (
-                                            <span key={et.tag_id} className={`tag ${et.tags?.tag_type === 'strategy' ? 'tag-strategy' : et.tags?.tag_type === 'source_type' ? 'tag-source' : ''}`} style={{ fontSize: '0.72rem', padding: '2px 8px' }}>
+                                            <span key={et.tag_id} className={`tag ${et.tags?.tag_type === 'strategy' ? 'tag-strategy' : ''}`} style={{ fontSize: '0.72rem', padding: '2px 8px' }}>
                                                 {et.tags?.name}
                                             </span>
                                         ))}

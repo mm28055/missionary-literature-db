@@ -11,6 +11,16 @@ const LAYERS = [
     { value: 'reform', label: 'Reform / Response' },
 ];
 
+const SOURCE_TYPES = [
+    { value: 'Published Book', label: 'Published Book' },
+    { value: 'Letter to Missionary Society', label: 'Letter to Missionary Society' },
+    { value: 'Tract for Indian Distribution', label: 'Tract for Indian Distribution' },
+    { value: 'Official / Institutional Report', label: 'Official / Institutional Report' },
+    { value: 'Private Diary / Journal', label: 'Private Diary / Journal' },
+    { value: 'Periodical / Magazine Article', label: 'Periodical / Magazine Article' },
+    { value: 'Conference Paper', label: 'Conference Paper' },
+];
+
 export default function ManageWorksPage() {
     const [works, setWorks] = useState([]);
     const [missionaries, setMissionaries] = useState([]);
@@ -29,6 +39,7 @@ export default function ManageWorksPage() {
     const [missionaryId, setMissionaryId] = useState('');
     const [pdfUrl, setPdfUrl] = useState('');
     const [uploadingPdf, setUploadingPdf] = useState(false);
+    const [sourceType, setSourceType] = useState('');
     const [editingId, setEditingId] = useState(null);
 
     const supabase = createClient();
@@ -50,7 +61,7 @@ export default function ManageWorksPage() {
     const resetForm = () => {
         setTitle(''); setYearPublished(''); setPublisher('');
         setBiblioInfo(''); setAuthor(''); setLayer('missionary');
-        setMissionaryId(''); setPdfUrl(''); setEditingId(null);
+        setMissionaryId(''); setPdfUrl(''); setSourceType(''); setEditingId(null);
         setError(''); setSuccess('');
     };
 
@@ -95,6 +106,7 @@ export default function ManageWorksPage() {
             layer,
             missionary_id: missionaryId || null,
             pdf_url: pdfUrl || null,
+            source_type: sourceType || null,
         };
 
         try {
@@ -117,6 +129,7 @@ export default function ManageWorksPage() {
         setPublisher(w.publisher || ''); setBiblioInfo(w.bibliographic_info || '');
         setAuthor(w.author || ''); setLayer(w.layer || 'missionary');
         setMissionaryId(w.missionary_id || ''); setPdfUrl(w.pdf_url || '');
+        setSourceType(w.source_type || '');
         setEditingId(w.id); setSuccess('');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -162,6 +175,16 @@ export default function ManageWorksPage() {
                                 ))}
                             </select>
                         </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Source Type</label>
+                        <select className="form-select" value={sourceType} onChange={(e) => setSourceType(e.target.value)}>
+                            <option value="">Select source type...</option>
+                            {SOURCE_TYPES.map(s => (
+                                <option key={s.value} value={s.value}>{s.label}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-lg)' }}>
@@ -245,6 +268,7 @@ export default function ManageWorksPage() {
                                             {w.missionaries?.name || w.author || 'Unknown author'}
                                             {w.year_published && ` · ${w.year_published}`}
                                             {w.layer && w.layer !== 'missionary' && ` · ${w.layer}`}
+                                            {w.source_type && ` · ${w.source_type}`}
                                         </div>
                                     </div>
                                     <div className={styles['admin-list-item-actions']}>
