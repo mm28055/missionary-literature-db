@@ -333,6 +333,48 @@ export default function ThemesPage() {
                             )}
                         </div>
 
+                        {/* Active filter pills */}
+                        {hasActiveFilters && (
+                            <div className={styles.activeFilters}>
+                                {themeInfo && (
+                                    <span className={styles.activeFilterPill}>
+                                        {parentForSub ? `${parentForSub.name} › ` : ''}{themeInfo.name}
+                                        <button className={styles.activeFilterRemove} onClick={() => { setSelectedTheme(null); setSelectedThemeType(null); }}>×</button>
+                                    </span>
+                                )}
+                                {selectedLayers.map(l => (
+                                    <span key={l} className={styles.activeFilterPill}>
+                                        {LAYERS.find(x => x.value === l)?.label}
+                                        <button className={styles.activeFilterRemove} onClick={() => setSelectedLayers(p => p.filter(v => v !== l))}>×</button>
+                                    </span>
+                                ))}
+                                {selectedDenominations.map(id => (
+                                    <span key={id} className={styles.activeFilterPill}>
+                                        {denominations.find(d => d.id === id)?.name}
+                                        <button className={styles.activeFilterRemove} onClick={() => setSelectedDenominations(p => p.filter(v => v !== id))}>×</button>
+                                    </span>
+                                ))}
+                                {selectedMissionaries.map(id => (
+                                    <span key={id} className={styles.activeFilterPill}>
+                                        {missionaries.find(m => m.id === id)?.name}
+                                        <button className={styles.activeFilterRemove} onClick={() => setSelectedMissionaries(p => p.filter(v => v !== id))}>×</button>
+                                    </span>
+                                ))}
+                                {selectedSourceTypes.map(st => (
+                                    <span key={st} className={styles.activeFilterPill}>
+                                        {st}
+                                        <button className={styles.activeFilterRemove} onClick={() => setSelectedSourceTypes(p => p.filter(v => v !== st))}>×</button>
+                                    </span>
+                                ))}
+                                {(dateFrom || dateTo) && (
+                                    <span className={styles.activeFilterPill}>
+                                        {dateFrom || '...'} — {dateTo || '...'}
+                                        <button className={styles.activeFilterRemove} onClick={() => { setDateFrom(''); setDateTo(''); }}>×</button>
+                                    </span>
+                                )}
+                            </div>
+                        )}
+
                         {/* THEMES */}
                         <div className={styles.filterSection}>
                             <button className={styles.filterSectionHeader} onClick={() => setExpandedSections(p => ({ ...p, themes: !p.themes }))}>
@@ -521,47 +563,6 @@ export default function ThemesPage() {
                             <span className={styles.resultCount}>{sortedExtracts.length} extract{sortedExtracts.length !== 1 ? 's' : ''}</span>
                         </div>
 
-                        {/* Active filter pills */}
-                        {hasActiveFilters && (
-                            <div className={styles.activeFilters}>
-                                {themeInfo && (
-                                    <span className={styles.activeFilterPill}>
-                                        {parentForSub ? `${parentForSub.name} › ` : ''}{themeInfo.name}
-                                        <button className={styles.activeFilterRemove} onClick={() => { setSelectedTheme(null); setSelectedThemeType(null); }}>×</button>
-                                    </span>
-                                )}
-                                {selectedLayers.map(l => (
-                                    <span key={l} className={styles.activeFilterPill}>
-                                        {LAYERS.find(x => x.value === l)?.label}
-                                        <button className={styles.activeFilterRemove} onClick={() => setSelectedLayers(p => p.filter(v => v !== l))}>×</button>
-                                    </span>
-                                ))}
-                                {selectedDenominations.map(id => (
-                                    <span key={id} className={styles.activeFilterPill}>
-                                        {denominations.find(d => d.id === id)?.name}
-                                        <button className={styles.activeFilterRemove} onClick={() => setSelectedDenominations(p => p.filter(v => v !== id))}>×</button>
-                                    </span>
-                                ))}
-                                {selectedMissionaries.map(id => (
-                                    <span key={id} className={styles.activeFilterPill}>
-                                        {missionaries.find(m => m.id === id)?.name}
-                                        <button className={styles.activeFilterRemove} onClick={() => setSelectedMissionaries(p => p.filter(v => v !== id))}>×</button>
-                                    </span>
-                                ))}
-                                {selectedSourceTypes.map(st => (
-                                    <span key={st} className={styles.activeFilterPill}>
-                                        {st}
-                                        <button className={styles.activeFilterRemove} onClick={() => setSelectedSourceTypes(p => p.filter(v => v !== st))}>×</button>
-                                    </span>
-                                ))}
-                                {(dateFrom || dateTo) && (
-                                    <span className={styles.activeFilterPill}>
-                                        {dateFrom || '...'} — {dateTo || '...'}
-                                        <button className={styles.activeFilterRemove} onClick={() => { setDateFrom(''); setDateTo(''); }}>×</button>
-                                    </span>
-                                )}
-                            </div>
-                        )}
 
                         {/* Scholarly intro banner */}
                         {themeInfo && (themeInfo.description || themeInfo.introduction) && !introCollapsed && (
