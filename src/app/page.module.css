@@ -1,41 +1,48 @@
 /* ---- Home Page ---- */
 .hero {
   text-align: center;
-  padding: var(--space-3xl) 0;
+  padding: 6rem var(--space-xl) 5rem;
   position: relative;
+  background: url('/hero-bg.png') center / cover no-repeat;
+  margin: 0 calc(-1 * var(--space-xl));
+  overflow: hidden;
 }
 
 .hero::before {
   content: '';
   position: absolute;
-  top: -30%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(212, 165, 116, 0.06) 0%, transparent 70%);
+  inset: 0;
+  background: linear-gradient(180deg,
+      rgba(252, 250, 247, 0.82) 0%,
+      rgba(252, 250, 247, 0.75) 40%,
+      rgba(252, 250, 247, 0.92) 100%);
   pointer-events: none;
 }
 
 .heroTitle {
+  position: relative;
+  z-index: 1;
   font-size: 3.2rem;
   font-weight: 700;
   margin-bottom: var(--space-md);
-  background: linear-gradient(135deg, var(--accent-parchment), var(--accent-gold));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #3a2a18;
+  line-height: 1.15;
 }
 
 .heroSubtitle {
+  position: relative;
+  z-index: 1;
   font-size: 1.15rem;
-  color: var(--text-secondary);
+  color: #5a4a3a;
   max-width: 650px;
   margin: 0 auto var(--space-2xl);
   line-height: 1.8;
+  font-style: italic;
 }
 
 .heroActions {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: center;
   gap: var(--space-md);
