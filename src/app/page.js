@@ -54,24 +54,25 @@ export default async function HomePage() {
 
   return (
     <div className="page-content">
+      {/* Hero — full-bleed, outside container */}
+      <section className={styles.hero}>
+        <h1 className={styles.heroTitle}>
+          Colonial Discourse<br />& Indian Selfhood
+        </h1>
+        <p className={styles.heroSubtitle}>
+          Interrogating the texts that shaped how India came to know itself.
+        </p>
+        <div className={styles.heroActions}>
+          <Link href="/themes" className="btn btn-primary">
+            Explore Themes
+          </Link>
+          <Link href="/about" className="btn btn-ghost">
+            About the Project
+          </Link>
+        </div>
+      </section>
+
       <div className="container">
-        {/* Hero */}
-        <section className={styles.hero}>
-          <h1 className={styles.heroTitle}>
-            Colonial Discourse<br />& Indian Selfhood
-          </h1>
-          <p className={styles.heroSubtitle}>
-            Interrogating the texts that shaped how India came to know itself.
-          </p>
-          <div className={styles.heroActions}>
-            <Link href="/themes" className="btn btn-primary">
-              Explore Themes
-            </Link>
-            <Link href="/about" className="btn btn-ghost">
-              About the Project
-            </Link>
-          </div>
-        </section>
 
         {/* Stats */}
         <section className={styles.statsRow}>
