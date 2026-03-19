@@ -67,8 +67,8 @@ export default async function HomePage() {
             from Ward to Duff — constructed Hinduism as superstition in need of Christian salvation.
             <strong> Bureaucratic records</strong> — census reports, official surveys — codified these
             judgments into the neutral language of governance. And <strong>reform voices</strong> — Phule,
-            among others — turned these very categories back against their authors, forging a new
-            language of self-understanding and resistance.
+            among others — internalized this very critique, reworking it into a new vocabulary of
+            self-understanding from which modern Indian selfhood would emerge.
           </p>
           <p className={styles.aboutText}>
             Explore the extracts thematically to trace how ideas about caste, religion, and civilization
