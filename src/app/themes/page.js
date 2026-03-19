@@ -318,22 +318,28 @@ export default function ThemesPage() {
     return (
         <div className="page-content">
             <div className="container">
-                {/* Mobile filter toggle */}
-                <button
-                    className={styles.mobileFilterToggle}
-                    onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-                >
-                    {mobileFiltersOpen ? '✕ Hide Filters' : '☰ Filters & Themes'}
-                </button>
+                {/* Mobile drawer backdrop */}
+                {mobileFiltersOpen && (
+                    <div className={styles.drawerBackdrop} onClick={() => setMobileFiltersOpen(false)} />
+                )}
 
                 <div className={styles.pageLayout}>
                     {/* === FILTER SIDEBAR === */}
                     <aside className={`${styles.filterSidebar} ${mobileFiltersOpen ? styles.filterSidebarOpen : ''}`}>
                         <div className={styles.filterHeader}>
                             <span className={styles.filterTitle}>Filters</span>
-                            {hasActiveFilters && (
-                                <button className={styles.clearAllBtn} onClick={clearAllFilters}>Clear all</button>
-                            )}
+                            <div className={styles.filterHeaderActions}>
+                                {hasActiveFilters && (
+                                    <button className={styles.clearAllBtn} onClick={clearAllFilters}>Clear all</button>
+                                )}
+                                <button
+                                    className={styles.drawerCloseBtn}
+                                    onClick={() => setMobileFiltersOpen(false)}
+                                    aria-label="Close filters"
+                                >
+                                    ✕
+                                </button>
+                            </div>
                         </div>
 
                         {/* Active filter pills */}
@@ -543,6 +549,13 @@ export default function ThemesPage() {
                     <main className={styles.mainContent}>
                         {/* Top Bar */}
                         <div className={styles.topBar}>
+                            <button
+                                className={styles.drawerToggle}
+                                onClick={() => setMobileFiltersOpen(true)}
+                                aria-label="Open filters"
+                            >
+                                ☰
+                            </button>
                             <input
                                 type="text"
                                 className={styles.searchInput}
