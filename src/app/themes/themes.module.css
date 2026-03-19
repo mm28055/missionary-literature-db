@@ -479,6 +479,7 @@
 .extractCard {
     padding: var(--space-lg) var(--space-xl);
     border-left: 3px solid transparent;
+    border-bottom: 1px solid #eee;
     transition: all var(--transition-fast);
     background: transparent;
     cursor: pointer;
@@ -496,7 +497,7 @@
 
 /* ---- Extract Metadata (above text) ---- */
 .extractMeta {
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
 }
 
 .extractMetaRow {
@@ -531,9 +532,9 @@
 .extractIcons {
     display: inline-flex;
     gap: 4px;
-    margin-left: 6px;
-    font-size: 0.72rem;
-    opacity: 0.6;
+    margin-left: 8px;
+    font-size: 0.8rem;
+    opacity: 0.7;
 }
 
 .extractTagLine {
