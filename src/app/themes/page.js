@@ -728,11 +728,16 @@ export default function ThemesPage() {
                                                                 const linked = isSource ? link.target : link.source;
                                                                 if (!linked) return null;
                                                                 const linkedAuthor = linked.works?.missionaries?.name || linked.works?.author || 'Unknown';
-                                                                const linkLabel = link.link_type
-                                                                    ? (isSource
-                                                                        ? link.link_type.replace(/_/g, ' ')
-                                                                        : link.link_type.replace(/_/g, ' ') + ' by')
-                                                                    : null;
+                                                                const LINK_LABELS = {
+                                                                    influenced: { source: 'influenced', target: 'influenced by' },
+                                                                    codified: { source: 'codified in', target: 'codifies' },
+                                                                    adopted: { source: 'adopted by', target: 'adopts from' },
+                                                                    reacted_to: { source: 'reacted to', target: 'reaction from' },
+                                                                };
+                                                                const labels = LINK_LABELS[link.link_type];
+                                                                const linkLabel = labels
+                                                                    ? (isSource ? labels.source : labels.target)
+                                                                    : (link.link_type ? link.link_type.replace(/_/g, ' ') : null);
 
                                                                 return (
                                                                     <button
