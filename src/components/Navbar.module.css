@@ -4,9 +4,9 @@
     top: 0;
     z-index: 100;
     height: var(--nav-height);
-    background: rgba(15, 15, 26, 0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-subtle);
+    background: rgba(252, 250, 247, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(184, 132, 58, 0.12);
     display: flex;
     align-items: center;
 }
@@ -26,19 +26,21 @@
     align-items: center;
     gap: var(--space-sm);
     text-decoration: none;
-    color: var(--text-heading);
+    color: #3a3028;
     font-family: var(--font-heading);
-    font-size: 1.35rem;
-    font-weight: 600;
+    font-size: 1.15rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
     transition: color var(--transition-fast);
 }
 
 .navbar-brand:hover {
-    color: var(--accent-gold);
+    color: #b8843a;
 }
 
 .navbar-brand-icon {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+    opacity: 0.7;
 }
 
 .navbar-links {
@@ -50,32 +52,33 @@
 
 .navbar-link {
     padding: var(--space-sm) var(--space-md);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 450;
-    color: var(--text-secondary);
+    color: #6b5e50;
     text-decoration: none;
     border-radius: var(--radius-sm);
     transition: all var(--transition-fast);
 }
 
 .navbar-link:hover {
-    color: var(--text-primary);
-    background: var(--bg-glass);
+    color: #3a3028;
+    background: rgba(184, 132, 58, 0.06);
 }
 
 .navbar-link.active {
-    color: var(--accent-gold);
-    background: rgba(212, 165, 116, 0.08);
+    color: #b8843a;
+    background: rgba(184, 132, 58, 0.08);
 }
 
 .navbar-link-admin {
-    border: 1px solid var(--border-medium);
-    color: var(--accent-gold-dim);
+    border: 1px solid rgba(184, 132, 58, 0.2);
+    color: #b8843a;
+    font-size: 0.78rem;
 }
 
 .navbar-link-admin:hover {
-    border-color: var(--accent-gold);
-    color: var(--accent-gold);
+    border-color: #b8843a;
+    background: rgba(184, 132, 58, 0.06);
 }
 
 /* Mobile menu */
@@ -83,7 +86,7 @@
     display: none;
     background: none;
     border: none;
-    color: var(--text-primary);
+    color: #3a3028;
     font-size: 1.5rem;
     cursor: pointer;
     padding: var(--space-xs);
@@ -102,9 +105,9 @@
         right: 0;
         flex-direction: column;
         padding: var(--space-md);
-        background: rgba(15, 15, 26, 0.95);
-        backdrop-filter: blur(20px);
-        border-bottom: 1px solid var(--border-subtle);
+        background: rgba(252, 250, 247, 0.97);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(184, 132, 58, 0.12);
         gap: var(--space-xs);
     }
 
