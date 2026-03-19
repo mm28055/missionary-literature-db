@@ -647,7 +647,6 @@ export default function ThemesPage() {
                                                         {strategyTags.length > 0 && (
                                                             <span className={styles.strategyTagInline}>
                                                                 {themeTags.length > 0 && <span className={styles.extractTagPipe}> | </span>}
-                                                                <span className={styles.strategyLabel}>Strategy: </span>
                                                                 {strategyTags.map((t, i) => (
                                                                     <span key={t.id}>
                                                                         {i > 0 && <span className={styles.extractSep}> · </span>}
