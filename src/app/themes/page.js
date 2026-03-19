@@ -613,7 +613,7 @@ export default function ThemesPage() {
                                             <div className={styles.extractMeta}>
                                                 <div className={styles.extractMetaRow}>
                                                     <span
-                                                        className={`${styles.extractAuthor} ${styles.clickable}`}
+                                                        className={`${styles.extractAuthor} ${extract.works?.missionaries?.id ? styles.clickable : ''}`}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             if (extract.works?.missionaries?.id) {
@@ -621,7 +621,7 @@ export default function ThemesPage() {
                                                                 setInfoPanelId(extract.works.missionaries.id);
                                                             }
                                                         }}
-                                                        title="View missionary details"
+                                                        title={extract.works?.missionaries?.id ? 'View missionary details' : undefined}
                                                     >{author}</span>
                                                     {extract.works?.year_published && (
                                                         <>
