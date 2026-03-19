@@ -160,6 +160,7 @@
     flex-shrink: 0;
     position: relative;
     transition: all var(--transition-fast);
+    margin-top: 6px;
 }
 
 .themeRadio:checked {
@@ -203,7 +204,7 @@
 
 .themeChildRow {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-xs);
     padding: 3px 6px;
     border-radius: var(--radius-sm);
@@ -231,7 +232,7 @@
 /* ---- Checkbox Filters ---- */
 .checkboxItem {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-sm);
     padding: 3px 6px;
     border-radius: var(--radius-sm);
@@ -249,6 +250,7 @@
     accent-color: var(--accent-gold);
     cursor: pointer;
     flex-shrink: 0;
+    margin-top: 5px;
 }
 
 .checkboxLabel {
