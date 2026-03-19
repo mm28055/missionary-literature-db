@@ -1,7 +1,7 @@
 /* ---- Home Page ---- */
 .hero {
   text-align: center;
-  padding: calc(var(--nav-height) + 4rem) var(--space-xl) 5rem;
+  padding: calc(var(--nav-height) + 6rem) var(--space-xl) 6rem;
   position: relative;
   background: url('/hero-bg.png') center / cover no-repeat;
   width: 100%;
@@ -15,8 +15,9 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg,
-      rgba(252, 250, 247, 0.55) 0%,
-      rgba(252, 250, 247, 0.5) 40%,
+      rgba(40, 30, 20, 0.35) 0%,
+      rgba(252, 250, 247, 0.45) 25%,
+      rgba(252, 250, 247, 0.5) 50%,
       rgba(252, 250, 247, 0.7) 100%);
   pointer-events: none;
 }
