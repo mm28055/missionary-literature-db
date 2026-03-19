@@ -8,29 +8,13 @@ export default async function HomePage() {
   const supabase = await createClient();
 
   // Load featured extracts + stats
-  const [extractsRes, statsRes] = await Promise.all([
-    supabase.from('extracts').select(`
+  const extractsRes = await supabase.from('extracts').select(`
             id, content, layer, commentary,
             works(title, year_published, author, missionaries(name)),
             extract_tags(tags(id, name, tag_type, parent_id))
-        `).order('created_at', { ascending: false }).limit(4),
-
-    Promise.all([
-      supabase.from('extracts').select('id', { count: 'exact', head: true }),
-      supabase.from('tags').select('id', { count: 'exact', head: true }).eq('tag_type', 'theme').is('parent_id', null),
-      supabase.from('missionaries').select('id', { count: 'exact', head: true }),
-      supabase.from('works').select('id', { count: 'exact', head: true }),
-    ]),
-  ]);
+        `).order('created_at', { ascending: false }).limit(4);
 
   const extracts = extractsRes.data || [];
-  const [extractCount, themeCount, missionaryCount, workCount] = statsRes;
-  const stats = {
-    extracts: extractCount.count || 0,
-    themes: themeCount.count || 0,
-    missionaries: missionaryCount.count || 0,
-    works: workCount.count || 0,
-  };
 
   // Load parent tag names for display
   const allTags = {};
@@ -74,20 +58,22 @@ export default async function HomePage() {
 
       <div className="container">
 
-        {/* Stats */}
-        <section className={styles.statsRow}>
-          {[
-            { label: 'Extracts', value: stats.extracts, icon: '📜' },
-            { label: 'Themes', value: stats.themes, icon: '🏷️' },
-            { label: 'Authors', value: stats.missionaries, icon: '✍️' },
-            { label: 'Works', value: stats.works, icon: '📚' },
-          ].map((s) => (
-            <div key={s.label} className={`card ${styles.statCard}`}>
-              <div className={styles.statIcon}>{s.icon}</div>
-              <div className={styles.statValue}>{s.value}</div>
-              <div className={styles.statLabel}>{s.label}</div>
-            </div>
-          ))}
+        {/* About the Archive */}
+        <section className={styles.aboutSection}>
+          <h2 className={styles.aboutTitle}>About the Archive</h2>
+          <p className={styles.aboutText}>
+            This archive brings together three bodies of colonial-era writing that, read side by side,
+            reveal how India was described, classified, and ultimately reimagined. <strong>Missionary texts</strong> —
+            from Ward to Duff — constructed Hinduism as superstition in need of Christian salvation.
+            <strong> Bureaucratic records</strong> — census reports, official surveys — codified these
+            judgments into the neutral language of governance. And <strong>reform voices</strong> — Phule,
+            among others — turned these very categories back against their authors, forging a new
+            language of self-understanding and resistance.
+          </p>
+          <p className={styles.aboutText}>
+            Explore the extracts thematically to trace how ideas about caste, religion, and civilization
+            moved between these three worlds — and how they continue to shape Indian self-perception today.
+          </p>
         </section>
 
         {/* Featured Extracts */}

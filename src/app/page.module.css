@@ -50,37 +50,37 @@
   flex-wrap: wrap;
 }
 
-/* Stats */
-.statsRow {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-lg);
-  margin: var(--space-3xl) 0;
+/* About Section */
+.aboutSection {
+  max-width: 720px;
+  margin: var(--space-3xl) auto;
+  padding: 0 var(--space-md);
 }
 
-.statCard {
+.aboutTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #3a2a18;
+  margin-bottom: var(--space-lg);
   text-align: center;
-  padding: var(--space-xl) var(--space-lg);
+  letter-spacing: 0.01em;
 }
 
-.statIcon {
-  font-size: 2rem;
-  margin-bottom: var(--space-sm);
+.aboutText {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: #4a3d30;
+  margin-bottom: var(--space-lg);
+  text-align: left;
 }
 
-.statValue {
-  font-size: 2.4rem;
-  font-weight: 700;
-  color: var(--accent-gold);
-  font-variant-numeric: tabular-nums;
+.aboutText strong {
+  color: #b8843a;
+  font-weight: 600;
 }
 
-.statLabel {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-top: var(--space-xs);
+.aboutText:last-child {
+  margin-bottom: 0;
 }
 
 /* Featured Extracts */
