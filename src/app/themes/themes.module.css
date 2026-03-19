@@ -544,6 +544,15 @@
     margin-top: 2px;
 }
 
+.strategyTagInline {
+    color: #5a7a6b;
+}
+
+.extractTagMore {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
 .extractLayerBadge {
     font-family: var(--font-body);
     font-size: 0.62rem;

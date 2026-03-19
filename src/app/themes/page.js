@@ -632,11 +632,23 @@ export default function ThemesPage() {
                                                         </span>
                                                     )}
                                                 </div>
-                                                {/* Tags as plain text - hidden when theme is filtered */}
-                                                {!selectedTheme && themeTags.length > 0 && (
+                                                {/* Tags as plain text */}
+                                                {(themeTags.length > 0 || strategyTags.length > 0) && (
                                                     <div className={styles.extractTagLine}>
-                                                        {themeTags.map((t, i) => (
+                                                        {themeTags.slice(0, 3).map((t, i) => (
                                                             <span key={t.id}>
+                                                                {i > 0 && <span className={styles.extractSep}> · </span>}
+                                                                {t.name}
+                                                            </span>
+                                                        ))}
+                                                        {themeTags.length > 3 && (
+                                                            <span className={styles.extractTagMore}> +{themeTags.length - 3} more</span>
+                                                        )}
+                                                        {strategyTags.length > 0 && themeTags.length > 0 && (
+                                                            <span className={styles.extractSep}> · </span>
+                                                        )}
+                                                        {strategyTags.map((t, i) => (
+                                                            <span key={t.id} className={styles.strategyTagInline}>
                                                                 {i > 0 && <span className={styles.extractSep}> · </span>}
                                                                 {t.name}
                                                             </span>
