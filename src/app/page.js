@@ -58,12 +58,10 @@ export default async function HomePage() {
         {/* Hero */}
         <section className={styles.hero}>
           <h1 className={styles.heroTitle}>
-            Missionary Literature on India
+            Colonial Discourse<br />& Indian Selfhood
           </h1>
           <p className={styles.heroSubtitle}>
-            A scholarly database of 19th-century missionary writings that shaped Western perceptions of
-            Hinduism, caste, and Indian civilization — and their downstream impact through colonial
-            policy and Indian reform movements.
+            Interrogating the texts that shaped how India came to know itself.
           </p>
           <div className={styles.heroActions}>
             <Link href="/themes" className="btn btn-primary">
@@ -80,7 +78,7 @@ export default async function HomePage() {
           {[
             { label: 'Extracts', value: stats.extracts, icon: '📜' },
             { label: 'Themes', value: stats.themes, icon: '🏷️' },
-            { label: 'Missionaries', value: stats.missionaries, icon: '✝️' },
+            { label: 'Authors', value: stats.missionaries, icon: '✍️' },
             { label: 'Works', value: stats.works, icon: '📚' },
           ].map((s) => (
             <div key={s.label} className={`card ${styles.statCard}`}>

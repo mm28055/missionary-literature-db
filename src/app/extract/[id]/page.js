@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
     const title = extract.works?.title || '';
 
     return {
-        title: `${author ? author + ' — ' : ''}${title} — Missionary Literature Database`,
+        title: `${author ? author + ' — ' : ''}${title} — Colonial Discourse & Indian Selfhood`,
         description: extract.content?.substring(0, 160),
     };
 }

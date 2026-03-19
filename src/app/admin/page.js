@@ -6,7 +6,7 @@ import styles from './admin.module.css';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-    title: 'Admin Dashboard — Missionary Literature Database',
+    title: 'Admin Dashboard — Colonial Discourse & Indian Selfhood',
 };
 
 export default async function AdminPage() {

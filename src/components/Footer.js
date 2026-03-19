@@ -6,9 +6,9 @@ export default function Footer() {
         <footer className={styles.footer}>
             <div className={styles['footer-inner']}>
                 <div className={styles['footer-text']}>
-                    <span className={styles['footer-brand']}>Missionary Literature Database</span>
+                    <span className={styles['footer-brand']}>Colonial Discourse & Indian Selfhood</span>
                     <br />
-                    A digital humanities project exploring 19th-century missionary writings on India &amp; Hinduism.
+                    Interrogating the texts that shaped how India came to know itself.
                 </div>
                 <div className={styles['footer-links']}>
                     <Link href="/about" className={styles['footer-link']}>About</Link>

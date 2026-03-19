@@ -12,8 +12,8 @@ export async function generateMetadata() {
         .single();
 
     return {
-        title: `${page?.title || 'About'} — Missionary Literature Database`,
-        description: page?.meta_description || 'Learn about the Missionary Literature Database project.',
+        title: `${page?.title || 'About'} — Colonial Discourse & Indian Selfhood`,
+        description: page?.meta_description || 'About the Colonial Discourse & Indian Selfhood project.',
     };
 }
 
