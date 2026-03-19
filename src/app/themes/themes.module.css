@@ -19,7 +19,7 @@
     overflow-y: auto;
     padding: var(--space-lg);
     background: #ffffff;
-    border: 1px solid #e5e5e5;
+    border: 1px solid #b8843a;
     border-radius: var(--radius-md);
 }
 
@@ -482,7 +482,7 @@
 
 .extractCard:hover {
     background: #fafafa;
-    border-left-color: #d0d0d0;
+    border-left-color: #b8843a;
 }
 
 .extractCardExpanded {
