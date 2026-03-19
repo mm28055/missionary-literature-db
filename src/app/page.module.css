@@ -1,12 +1,13 @@
 /* ---- Home Page ---- */
 .hero {
   text-align: center;
-  padding: 6rem var(--space-xl) 5rem;
+  padding: calc(var(--nav-height) + 4rem) var(--space-xl) 5rem;
   position: relative;
   background: url('/hero-bg.png') center / cover no-repeat;
   width: 100%;
   overflow: hidden;
   border-bottom: 1px solid rgba(184, 132, 58, 0.15);
+  margin-top: calc(-1 * var(--nav-height));
 }
 
 .hero::before {

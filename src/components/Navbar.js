@@ -9,7 +9,9 @@ import styles from './Navbar.module.css';
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [user, setUser] = useState(null);
+    const [scrolled, setScrolled] = useState(false);
     const pathname = usePathname();
+    const isHome = pathname === '/';
 
     useEffect(() => {
         const supabase = createClient();
@@ -18,13 +20,22 @@ export default function Navbar() {
         }).catch(() => { });
     }, []);
 
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 50);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
     const isActive = (path) => {
         if (path === '/') return pathname === '/';
         return pathname.startsWith(path);
     };
 
+    const navClass = `${styles.navbar} ${(!isHome || scrolled) ? styles.navbarSolid : ''}`;
+
     return (
-        <nav className={styles.navbar}>
+        <nav className={navClass}>
             <div className={styles['navbar-inner']}>
                 <Link href="/" className={styles['navbar-brand']}>
                     <span className={styles['navbar-brand-icon']}>📜</span>
