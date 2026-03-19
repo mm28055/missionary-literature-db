@@ -28,7 +28,7 @@ export default function Navbar() {
             <div className={styles['navbar-inner']}>
                 <Link href="/" className={styles['navbar-brand']}>
                     <span className={styles['navbar-brand-icon']}>📜</span>
-                    <span>Colonial Discourse</span>
+                    <span>Colonial Discourse & Indian Selfhood</span>
                 </Link>
 
                 <button
