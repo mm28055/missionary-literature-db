@@ -607,37 +607,40 @@ export default function ThemesPage() {
                                             className={`${styles.extractCard} ${isExpanded ? styles.extractCardExpanded : ''}`}
                                             onClick={() => handleExpandExtract(extract.id)}
                                         >
-                                            {/* Metadata above text */}
+                                            {/* Single metadata line */}
                                             <div className={styles.extractMeta}>
                                                 <div className={styles.extractMetaRow}>
                                                     <span className={styles.extractAuthor}>{author}</span>
-                                                    {extract.works?.missionaries?.denominations?.name && (
-                                                        <>
-                                                            <span className={styles.extractSep}>·</span>
-                                                            <span>{extract.works.missionaries.denominations.name}</span>
-                                                        </>
-                                                    )}
                                                     {extract.works?.year_published && (
                                                         <>
                                                             <span className={styles.extractSep}>·</span>
                                                             <span className={styles.extractYear}>{extract.works.year_published}</span>
                                                         </>
                                                     )}
-                                                    {extract.works?.source_type && (
+                                                    {extract.works?.title && (
                                                         <>
                                                             <span className={styles.extractSep}>·</span>
-                                                            <span className={styles.extractSourceType}>{extract.works.source_type}</span>
+                                                            <span className={styles.extractWork}>
+                                                                {extract.works.title}{extract.source_reference ? `, ${extract.source_reference}` : ''}
+                                                            </span>
                                                         </>
                                                     )}
-                                                    {extract.layer && (
-                                                        <span className={`${styles.extractLayerBadge} ${LAYER_STYLE[extract.layer] || ''}`}>
-                                                            {extract.layer}
+                                                    {(hasCommentary || linkCount > 0) && (
+                                                        <span className={styles.extractIcons}>
+                                                            {hasCommentary && <span title="Has commentary">💬</span>}
+                                                            {linkCount > 0 && <span title={`${linkCount} connection${linkCount !== 1 ? 's' : ''}`}>📎</span>}
                                                         </span>
                                                     )}
                                                 </div>
-                                                {extract.works?.title && (
-                                                    <div className={styles.extractMetaRow}>
-                                                        <span className={styles.extractWork}>{extract.works.title}</span>
+                                                {/* Tags as plain text - hidden when theme is filtered */}
+                                                {!selectedTheme && themeTags.length > 0 && (
+                                                    <div className={styles.extractTagLine}>
+                                                        {themeTags.map((t, i) => (
+                                                            <span key={t.id}>
+                                                                {i > 0 && <span className={styles.extractSep}> · </span>}
+                                                                {t.name}
+                                                            </span>
+                                                        ))}
                                                     </div>
                                                 )}
                                             </div>
@@ -645,52 +648,10 @@ export default function ThemesPage() {
                                             {/* Extract text */}
                                             <div className={styles.extractQuote}>{extract.content}</div>
 
-                                            {extract.source_reference && (
-                                                <div className={styles.extractRef}>— {extract.source_reference}</div>
-                                            )}
-
-                                            {/* Indicators */}
-                                            {(hasCommentary || linkCount > 0) && !isExpanded && (
-                                                <div className={styles.indicators}>
-                                                    {hasCommentary && (
-                                                        <span className={`${styles.indicator} ${styles.indicatorCommentary}`}>
-                                                            💬 Commentary
-                                                        </span>
-                                                    )}
-                                                    {linkCount > 0 && (
-                                                        <span className={`${styles.indicator} ${styles.indicatorLinks}`}>
-                                                            📎 {linkCount} connection{linkCount !== 1 ? 's' : ''}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {/* Tags */}
-                                            {(strategyTags.length > 0 || themeTags.length > 0) && !isExpanded && (
-                                                <div className={styles.extractTags}>
-                                                    {themeTags.map(t => (
-                                                        <span key={t.id} className={styles.themeTag}>{t.name}</span>
-                                                    ))}
-                                                    {strategyTags.map(t => (
-                                                        <span key={t.id} className={styles.strategyTag}>{t.name}</span>
-                                                    ))}
-                                                </div>
-                                            )}
-
                                             {/* Expanded content */}
                                             {isExpanded && (
                                                 <div className={styles.expandedContent} onClick={e => e.stopPropagation()}>
-                                                    {/* Tags */}
-                                                    {(strategyTags.length > 0 || themeTags.length > 0) && (
-                                                        <div className={styles.extractTags} style={{ marginBottom: 'var(--space-md)' }}>
-                                                            {themeTags.map(t => (
-                                                                <span key={t.id} className={styles.themeTag}>{t.name}</span>
-                                                            ))}
-                                                            {strategyTags.map(t => (
-                                                                <span key={t.id} className={styles.strategyTag}>{t.name}</span>
-                                                            ))}
-                                                        </div>
-                                                    )}
+
 
                                                     {/* Commentary */}
                                                     {hasCommentary && (
