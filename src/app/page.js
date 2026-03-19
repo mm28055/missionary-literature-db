@@ -37,7 +37,7 @@ export default async function HomePage() {
   };
 
   return (
-    <div className="page-content">
+    <div className="page-content" style={{ paddingTop: 0 }}>
       {/* Hero — full-bleed, outside container */}
       <section className={styles.hero}>
         <h1 className={styles.heroTitle}>
