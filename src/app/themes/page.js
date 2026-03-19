@@ -737,6 +737,9 @@ export default function ThemesPage() {
                                                                     >
                                                                         <span className={styles.crossLinkArrow}>↗</span>
                                                                         <div className={styles.crossLinkContent}>
+                                                                            {link.link_type && (
+                                                                                <div className={styles.crossLinkType}>{link.link_type.replace(/_/g, ' ')}</div>
+                                                                            )}
                                                                             <div className={styles.crossLinkSource}>{linkedAuthor} — {linked.works?.title || 'Untitled'}</div>
                                                                             <p className={styles.crossLinkPreview}>{linked.content?.substring(0, 150)}...</p>
                                                                         </div>
