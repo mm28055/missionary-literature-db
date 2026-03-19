@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import styles from './themes.module.css';
 import ExtractPanel from '@/components/ExtractPanel';
+import InfoPanel from '@/components/InfoPanel';
 
 const LAYERS = [
     { value: 'missionary', label: 'Missionary' },
@@ -51,6 +52,8 @@ export default function ThemesPage() {
     const [crossLinks, setCrossLinks] = useState([]);
     const [loadingLinks, setLoadingLinks] = useState(false);
     const [panelExtractId, setPanelExtractId] = useState(null);
+    const [infoPanelType, setInfoPanelType] = useState(null); // 'missionary' or 'work'
+    const [infoPanelId, setInfoPanelId] = useState(null);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [introCollapsed, setIntroCollapsed] = useState(false);
 
@@ -605,12 +608,21 @@ export default function ThemesPage() {
                                         <div
                                             key={extract.id}
                                             className={`${styles.extractCard} ${isExpanded ? styles.extractCardExpanded : ''}`}
-                                            onClick={() => handleExpandExtract(extract.id)}
                                         >
                                             {/* Single metadata line */}
                                             <div className={styles.extractMeta}>
                                                 <div className={styles.extractMetaRow}>
-                                                    <span className={styles.extractAuthor}>{author}</span>
+                                                    <span
+                                                        className={`${styles.extractAuthor} ${styles.clickable}`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            if (extract.works?.missionaries?.id) {
+                                                                setInfoPanelType('missionary');
+                                                                setInfoPanelId(extract.works.missionaries.id);
+                                                            }
+                                                        }}
+                                                        title="View missionary details"
+                                                    >{author}</span>
                                                     {extract.works?.year_published && (
                                                         <>
                                                             <span className={styles.extractSep}>·</span>
@@ -620,7 +632,17 @@ export default function ThemesPage() {
                                                     {extract.works?.title && (
                                                         <>
                                                             <span className={styles.extractSep}>·</span>
-                                                            <span className={styles.extractWork}>
+                                                            <span
+                                                                className={`${styles.extractWork} ${styles.clickable}`}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (extract.works?.id) {
+                                                                        setInfoPanelType('work');
+                                                                        setInfoPanelId(extract.works.id);
+                                                                    }
+                                                                }}
+                                                                title="View work details"
+                                                            >
                                                                 {extract.works.title}{extract.source_reference ? `, ${extract.source_reference}` : ''}
                                                             </span>
                                                         </>
@@ -632,15 +654,33 @@ export default function ThemesPage() {
                                                         </span>
                                                     )}
                                                 </div>
-                                                {/* Tags as plain text */}
+                                                {/* Tags as plain text — clickable to apply filter */}
                                                 {(themeTags.length > 0 || strategyTags.length > 0) && (
                                                     <div className={styles.extractTagLine}>
-                                                        {themeTags.slice(0, 3).map((t, i) => (
-                                                            <span key={t.id}>
-                                                                {i > 0 && <span className={styles.extractSep}> · </span>}
-                                                                {t.name}
-                                                            </span>
-                                                        ))}
+                                                        {themeTags.slice(0, 3).map((t, i) => {
+                                                            const parentTag = subThemes.find(st => st.id === t.id);
+                                                            const isSubTheme = !!parentTag;
+                                                            return (
+                                                                <span
+                                                                    key={t.id}
+                                                                    className={styles.clickableTag}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedTheme(t.id);
+                                                                        setSelectedThemeType(isSubTheme ? 'sub' : 'parent');
+                                                                        if (isSubTheme) {
+                                                                            setExpandedThemes(p => ({ ...p, [parentTag.parent_id]: true }));
+                                                                        } else {
+                                                                            setExpandedThemes(p => ({ ...p, [t.id]: true }));
+                                                                        }
+                                                                    }}
+                                                                    title={`Filter by ${t.name}`}
+                                                                >
+                                                                    {i > 0 && <span className={styles.extractSep}> · </span>}
+                                                                    {t.name}
+                                                                </span>
+                                                            );
+                                                        })}
                                                         {themeTags.length > 3 && (
                                                             <span className={styles.extractTagMore}> +{themeTags.length - 3} more</span>
                                                         )}
@@ -659,8 +699,12 @@ export default function ThemesPage() {
                                                 )}
                                             </div>
 
-                                            {/* Extract text */}
-                                            <div className={styles.extractQuote}>{extract.content}</div>
+                                            {/* Extract text — click to expand/collapse */}
+                                            <div
+                                                className={styles.extractQuote}
+                                                onClick={() => handleExpandExtract(extract.id)}
+                                                style={{ cursor: 'pointer' }}
+                                            >{extract.content}</div>
 
                                             {/* Expanded content */}
                                             {isExpanded && (
@@ -729,6 +773,16 @@ export default function ThemesPage() {
                         extractId={panelExtractId}
                         onClose={() => setPanelExtractId(null)}
                         onNavigate={(id) => setPanelExtractId(id)}
+                        supabase={supabase}
+                    />
+                )}
+
+                {/* Slide-out panel for missionary/work info */}
+                {infoPanelId && infoPanelType && (
+                    <InfoPanel
+                        type={infoPanelType}
+                        id={infoPanelId}
+                        onClose={() => { setInfoPanelId(null); setInfoPanelType(null); }}
                         supabase={supabase}
                     />
                 )}

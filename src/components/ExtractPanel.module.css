@@ -318,3 +318,70 @@
     color: var(--text-muted);
     font-size: 0.88rem;
 }
+
+/* ---- InfoPanel Styles ---- */
+.infoPanelName {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-heading);
+    margin: 0 0 var(--space-sm);
+    line-height: 1.3;
+}
+
+.infoPanelMeta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-lg);
+}
+
+.infoPanelBio {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: var(--space-lg);
+    white-space: pre-line;
+}
+
+.infoPanelDetail {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.infoPanelSection {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.infoPanelSectionTitle {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-md);
+}
+
+.infoPanelExtract {
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.infoPanelExtract:last-child {
+    border-bottom: none;
+}
+
+.infoPanelExtractMeta {
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.infoPanelExtractPreview {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}

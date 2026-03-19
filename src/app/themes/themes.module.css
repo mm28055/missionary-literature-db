@@ -521,6 +521,27 @@
     color: var(--border-medium);
 }
 
+.clickable {
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.clickable:hover {
+    color: #b8843a;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.clickableTag {
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.clickableTag:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 .extractWork {
     font-style: italic;
 }
