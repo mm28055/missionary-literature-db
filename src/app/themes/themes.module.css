@@ -17,10 +17,10 @@
     top: calc(var(--nav-height) + var(--space-xl));
     max-height: calc(100vh - var(--nav-height) - var(--space-2xl));
     overflow-y: auto;
-    padding: var(--space-lg);
+    padding: 13px 10px 13px 14px;
     background: #ffffff;
-    border: 1px solid #b8843a;
-    border-radius: var(--radius-md);
+    border: 1px solid rgba(184, 132, 58, 0.25);
+    border-radius: 10px;
 }
 
 .filterSidebar::-webkit-scrollbar {
@@ -42,12 +42,12 @@
 }
 
 .filterTitle {
-    font-family: var(--font-body);
-    font-size: 0.72rem;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    color: #1d1c1c;
 }
 
 .clearAllBtn {
@@ -87,11 +87,12 @@
 }
 
 .filterSectionLabel {
-    font-size: 0.78rem;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
     font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    color: #1d1c1c;
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 .filterSectionArrow {
@@ -179,12 +180,13 @@
 }
 
 .themeParentName {
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--text-primary);
+    font-family: var(--font-heading);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #1d1c1c;
     flex: 1;
     cursor: pointer;
+    line-height: 2;
 }
 
 .themeCount {
@@ -218,11 +220,12 @@
 }
 
 .themeChildName {
-    font-family: var(--font-body);
-    font-size: 0.78rem;
-    color: var(--text-secondary);
+    font-family: var(--font-heading);
+    font-size: 0.88rem;
+    color: #393939;
     flex: 1;
     cursor: pointer;
+    line-height: 2;
 }
 
 /* ---- Checkbox Filters ---- */
@@ -249,11 +252,12 @@
 }
 
 .checkboxLabel {
-    font-family: var(--font-body);
-    font-size: 0.78rem;
-    color: var(--text-secondary);
+    font-family: var(--font-heading);
+    font-size: 0.88rem;
+    color: #393939;
     flex: 1;
     cursor: pointer;
+    line-height: 2;
 }
 
 .checkboxCount {
