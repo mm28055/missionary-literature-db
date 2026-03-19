@@ -17,6 +17,7 @@ export default function BrowsePage() {
     const [expandedCard, setExpandedCard] = useState(null);
     const [crossLinks, setCrossLinks] = useState({});
     const [collapsedThemes, setCollapsedThemes] = useState({});
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     // Lightweight filters
     const [searchQuery, setSearchQuery] = useState('');
@@ -231,8 +232,8 @@ export default function BrowsePage() {
                     </p>
                 </header>
 
-                {/* Search + filter — unobtrusive */}
-                <div className={styles.filterBar}>
+                {/* Search — always visible */}
+                <div className={styles.searchBar}>
                     <div className={styles.searchWrap}>
                         <span className={styles.searchIcon}>⌕</span>
                         <input
@@ -243,6 +244,18 @@ export default function BrowsePage() {
                             onChange={e => setSearchQuery(e.target.value)}
                         />
                     </div>
+                    {/* Hamburger — mobile only */}
+                    <button
+                        className={styles.drawerToggle}
+                        onClick={() => setDrawerOpen(true)}
+                        aria-label="Open filters"
+                    >
+                        ☰
+                    </button>
+                </div>
+
+                {/* Filter bar — desktop only (layer select + counts) */}
+                <div className={styles.filterBar}>
                     <select
                         className={styles.layerSelect}
                         value={selectedLayer}
@@ -265,6 +278,63 @@ export default function BrowsePage() {
                         {loading ? '' : `${filtered.length} passage${filtered.length !== 1 ? 's' : ''}`}
                     </span>
                 </div>
+
+                {/* Mobile drawer — slides in from left */}
+                {drawerOpen && (
+                    <div className={styles.drawerBackdrop} onClick={() => setDrawerOpen(false)} />
+                )}
+                <aside className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ''}`}>
+                    <div className={styles.drawerHeader}>
+                        <span className={styles.drawerTitle}>Filters</span>
+                        <button
+                            className={styles.drawerClose}
+                            onClick={() => setDrawerOpen(false)}
+                            aria-label="Close filters"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                    <div className={styles.drawerSection}>
+                        <label className={styles.drawerLabel}>Layer</label>
+                        <select
+                            className={styles.layerSelect}
+                            value={selectedLayer}
+                            onChange={e => { setSelectedLayer(e.target.value); }}
+                        >
+                            <option value="">All layers</option>
+                            {Object.entries(LAYER_LABELS).map(([val, label]) => (
+                                <option key={val} value={val}>{label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className={styles.drawerSection}>
+                        <label className={styles.drawerLabel}>Themes</label>
+                        {parentThemes.map((parent, i) => {
+                            const subs = getSubThemes(parent.id);
+                            const count = subs.reduce((n, sub) => n + getExtractsForSubTheme(sub.id).length, 0);
+                            return (
+                                <a
+                                    key={parent.id}
+                                    href={`#theme-${parent.id}`}
+                                    className={styles.drawerThemeItem}
+                                    onClick={() => setDrawerOpen(false)}
+                                >
+                                    <span className={styles.tocNumeral}>{romanNumerals[i]}</span>
+                                    <span className={styles.tocName}>{parent.name}</span>
+                                    {count > 0 && <span className={styles.tocCount}>{count}</span>}
+                                </a>
+                            );
+                        })}
+                    </div>
+                    {(searchQuery || selectedLayer) && (
+                        <button
+                            className={`${styles.clearBtn} ${styles.drawerClear}`}
+                            onClick={() => { setSearchQuery(''); setSelectedLayer(''); }}
+                        >
+                            Clear all filters
+                        </button>
+                    )}
+                </aside>
 
                 {/* Layout: TOC + Content */}
                 <div className={styles.archiveLayout}>
