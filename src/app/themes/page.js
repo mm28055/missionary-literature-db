@@ -644,15 +644,18 @@ export default function ThemesPage() {
                                                         {themeTags.length > 3 && (
                                                             <span className={styles.extractTagMore}> +{themeTags.length - 3} more</span>
                                                         )}
-                                                        {strategyTags.length > 0 && themeTags.length > 0 && (
-                                                            <span className={styles.extractSep}> · </span>
-                                                        )}
-                                                        {strategyTags.map((t, i) => (
-                                                            <span key={t.id} className={styles.strategyTagInline}>
-                                                                {i > 0 && <span className={styles.extractSep}> · </span>}
-                                                                {t.name}
+                                                        {strategyTags.length > 0 && (
+                                                            <span className={styles.strategyTagInline}>
+                                                                {themeTags.length > 0 && <span className={styles.extractTagPipe}> | </span>}
+                                                                <span className={styles.strategyLabel}>Strategy: </span>
+                                                                {strategyTags.map((t, i) => (
+                                                                    <span key={t.id}>
+                                                                        {i > 0 && <span className={styles.extractSep}> · </span>}
+                                                                        {t.name}
+                                                                    </span>
+                                                                ))}
                                                             </span>
-                                                        ))}
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>

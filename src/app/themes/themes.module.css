@@ -548,6 +548,18 @@
     color: #5a7a6b;
 }
 
+.extractTagPipe {
+    color: #ccc;
+    margin: 0 2px;
+}
+
+.strategyLabel {
+    font-weight: 500;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
 .extractTagMore {
     color: var(--text-muted);
     font-size: 0.72rem;
