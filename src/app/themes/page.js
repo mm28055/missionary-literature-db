@@ -467,7 +467,7 @@ export default function ThemesPage() {
                             )}
                         </div>
 
-                        {/* DENOMINATION */}
+                        {/* DENOMINATION — hidden for now
                         <div className={styles.filterSection}>
                             <button className={styles.filterSectionHeader} onClick={() => setExpandedSections(p => ({ ...p, denomination: !p.denomination }))}>
                                 <span className={styles.filterSectionLabel}>Denomination</span>
@@ -487,6 +487,7 @@ export default function ThemesPage() {
                                 </div>
                             )}
                         </div>
+                        */}
 
                         {/* MISSIONARY */}
                         <div className={styles.filterSection}>
