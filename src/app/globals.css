@@ -91,6 +91,12 @@ body {
   line-height: 1.7;
   min-height: 100vh;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 /* Remove parchment texture overlay */
