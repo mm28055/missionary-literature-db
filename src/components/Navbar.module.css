@@ -6,7 +6,7 @@
     height: var(--nav-height);
     background: transparent;
     backdrop-filter: none;
-    border-bottom: none;
+    border-bottom: 1px solid transparent;
     display: flex;
     align-items: center;
     transition: background 0.3s ease, border-bottom 0.3s ease, backdrop-filter 0.3s ease;
