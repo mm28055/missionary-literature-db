@@ -316,7 +316,7 @@ export default function ThemesPage() {
     }
 
     return (
-        <div className="page-content">
+        <div className="page-content" data-sidebar>
             <div className="container">
                 {/* Mobile drawer backdrop */}
                 {mobileFiltersOpen && (

@@ -50,3 +50,10 @@
         text-align: center;
     }
 }
+
+/* Offset footer when a page with a fixed sidebar is active */
+@media (min-width: 901px) {
+    :global(body:has([data-sidebar])) .footer-inner {
+        padding-left: 306px;
+    }
+}
