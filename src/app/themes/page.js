@@ -492,13 +492,13 @@ export default function ThemesPage() {
                         {/* MISSIONARY */}
                         <div className={styles.filterSection}>
                             <button className={styles.filterSectionHeader} onClick={() => setExpandedSections(p => ({ ...p, missionary: !p.missionary }))}>
-                                <span className={styles.filterSectionLabel}>Missionary</span>
+                                <span className={styles.filterSectionLabel}>Authors</span>
                                 <span className={`${styles.filterSectionArrow} ${expandedSections.missionary ? styles.filterSectionArrowOpen : ''}`}>›</span>
                             </button>
                             {expandedSections.missionary && (
                                 <div className={styles.filterSectionBody}>
                                     {missionaries.length > 5 && (
-                                        <input type="text" className={styles.filterSearch} placeholder="Search missionaries..." value={missionarySearch} onChange={e => setMissionarySearch(e.target.value)} />
+                                        <input type="text" className={styles.filterSearch} placeholder="Search authors..." value={missionarySearch} onChange={e => setMissionarySearch(e.target.value)} />
                                     )}
                                     {missionaries.filter(m => !missionarySearch || m.name.toLowerCase().includes(missionarySearch.toLowerCase())).map(m => (
                                         <label key={m.id} className={styles.checkboxItem}>
