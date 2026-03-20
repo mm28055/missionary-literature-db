@@ -14,8 +14,8 @@
     width: 280px;
     flex-shrink: 0;
     position: sticky;
-    top: calc(var(--nav-height) + var(--space-xl));
-    max-height: calc(100vh - var(--nav-height) - var(--space-2xl));
+    top: 100px;
+    max-height: calc(100vh - 120px);
     overflow-y: auto;
     padding: 13px 10px 13px 14px;
     background: #ffffff;
