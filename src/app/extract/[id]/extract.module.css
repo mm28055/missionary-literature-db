@@ -305,6 +305,53 @@
     line-height: 1.6;
 }
 
+/* ---- Cited In (collapsible) ---- */
+.citedInSection {
+    margin: var(--space-lg) 0;
+}
+
+.citedInToggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    padding: 4px 0;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.citedInToggle:hover {
+    color: var(--text-secondary);
+}
+
+.citedInChevron {
+    display: inline-block;
+    font-size: 0.85rem;
+    transition: transform 0.2s ease;
+}
+
+.citedInChevronOpen {
+    transform: rotate(90deg);
+}
+
+.citedInContent {
+    margin-top: var(--space-sm);
+    padding-left: var(--space-md);
+    border-left: 2px solid var(--border-subtle);
+}
+
+.citedInLine {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-style: italic;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 768px) {
     .extractPage {

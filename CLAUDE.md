@@ -125,6 +125,7 @@ All tables use UUID primary keys. Row Level Security (RLS) is enabled on all tab
 - `notes` TEXT
 - `layer` TEXT DEFAULT 'missionary' — missionary | bureaucratic | reform
 - `commentary` TEXT — scholarly commentary
+- `cited_in` TEXT — secondary sources that cite/discuss this passage
 - `work_id` UUID FK → works (CASCADE DELETE)
 - `created_at` / `updated_at` TIMESTAMPTZ
 - `fts` tsvector GENERATED — full-text search vector (GIN indexed)

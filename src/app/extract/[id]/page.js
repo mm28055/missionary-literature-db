@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import styles from './extract.module.css';
 import ThemeSidebar from '@/components/ThemeSidebar';
+import CitedInToggle from '@/components/CitedInToggle';
 import sidebarStyles from '@/components/ThemeSidebar.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -175,6 +176,9 @@ export default async function ExtractDetailPage({ params }) {
                                     <div className={styles.commentaryText}>{extract.commentary}</div>
                                 </section>
                             )}
+
+                            {/* Cited In */}
+                            <CitedInToggle citedIn={extract.cited_in} styles={styles} />
 
                             {/* Tags */}
                             {(themeTags.length > 0 || strategyTags.length > 0 || sourceType) && (

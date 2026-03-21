@@ -733,6 +733,35 @@ export default function ThemesPage() {
                                                         </div>
                                                     )}
 
+                                                    {/* Cited In */}
+                                                    {extract.cited_in && (() => {
+                                                        const lines = extract.cited_in.split('\n').filter(l => l.trim());
+                                                        return (
+                                                            <div className={styles.citedInSection}>
+                                                                <button
+                                                                    className={styles.citedInToggle}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        const el = e.currentTarget.parentElement;
+                                                                        const content = el.querySelector('[data-cited-content]');
+                                                                        if (content) {
+                                                                            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+                                                                            e.currentTarget.querySelector('[data-chevron]').classList.toggle(styles.citedInChevronOpen);
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <span>📖 Cited in{lines.length > 0 ? ` (${lines.length})` : ''}</span>
+                                                                    <span data-chevron className={styles.citedInChevron}>›</span>
+                                                                </button>
+                                                                <div data-cited-content className={styles.citedInContent} style={{ display: 'none' }}>
+                                                                    {lines.map((line, i) => (
+                                                                        <div key={i} className={styles.citedInLine}>{line.trim()}</div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })()}
+
                                                     {/* Cross-links */}
                                                     {crossLinks.length > 0 && (
                                                         <div className={styles.crossLinksSection}>

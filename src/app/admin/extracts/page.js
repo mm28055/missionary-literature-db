@@ -18,7 +18,7 @@ export default function AdminExtractsPage() {
     const [editingExtract, setEditingExtract] = useState(null);
     const [selectedTagIds, setSelectedTagIds] = useState([]);
     const [form, setForm] = useState({
-        content: '', source_reference: '', work_id: '', notes: '', layer: 'missionary', commentary: '',
+        content: '', source_reference: '', work_id: '', notes: '', layer: 'missionary', commentary: '', cited_in: '',
     });
 
     const supabase = createClient();
@@ -60,6 +60,7 @@ export default function AdminExtractsPage() {
             notes: form.notes.trim() || null,
             layer: form.layer,
             commentary: form.commentary.trim() || null,
+            cited_in: form.cited_in.trim() || null,
         };
 
         let extractId;
@@ -86,7 +87,7 @@ export default function AdminExtractsPage() {
     };
 
     const resetForm = () => {
-        setForm({ content: '', source_reference: '', work_id: '', notes: '', layer: 'missionary', commentary: '' });
+        setForm({ content: '', source_reference: '', work_id: '', notes: '', layer: 'missionary', commentary: '', cited_in: '' });
         setSelectedTagIds([]);
         setEditingExtract(null);
     };
@@ -100,6 +101,7 @@ export default function AdminExtractsPage() {
             notes: extract.notes || '',
             layer: extract.layer || 'missionary',
             commentary: extract.commentary || '',
+            cited_in: extract.cited_in || '',
         });
         setSelectedTagIds((extract.extract_tags || []).map(et => et.tag_id));
     };
@@ -185,6 +187,18 @@ export default function AdminExtractsPage() {
                             onChange={(e) => setForm({ ...form, commentary: e.target.value })}
                             rows={8}
                             placeholder="Why this extract matters, what patterns it reveals..."
+                            style={{ width: '100%', resize: 'vertical' }}
+                        />
+                    </div>
+
+                    <div style={{ marginBottom: 'var(--space-md)' }}>
+                        <label className={styles.label}>Cited In</label>
+                        <textarea
+                            className={styles.textarea}
+                            value={form.cited_in}
+                            onChange={(e) => setForm({ ...form, cited_in: e.target.value })}
+                            rows={3}
+                            placeholder="e.g. Viswanathan, Masks of Conquest (1989), p. 87"
                             style={{ width: '100%', resize: 'vertical' }}
                         />
                     </div>

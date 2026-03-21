@@ -14,6 +14,7 @@ export default function ExtractPanel({ extractId, onClose, onNavigate, supabase 
     const [crossLinks, setCrossLinks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [history, setHistory] = useState([]);
+    const [citedInOpen, setCitedInOpen] = useState(false);
 
     useEffect(() => {
         if (extractId) loadExtract(extractId);
@@ -21,6 +22,7 @@ export default function ExtractPanel({ extractId, onClose, onNavigate, supabase 
 
     const loadExtract = async (id) => {
         setLoading(true);
+        setCitedInOpen(false);
         const { data } = await supabase
             .from('extracts')
             .select(`
@@ -153,6 +155,30 @@ export default function ExtractPanel({ extractId, onClose, onNavigate, supabase 
                                     <div className={styles.commentaryText}>{extract.commentary}</div>
                                 </div>
                             )}
+
+                            {/* Cited In */}
+                            {extract.cited_in && (() => {
+                                const lines = extract.cited_in.split('\n').filter(l => l.trim());
+                                return (
+                                    <div className={styles.citedInSection}>
+                                        <button
+                                            className={styles.citedInToggle}
+                                            onClick={() => setCitedInOpen(prev => !prev)}
+                                            aria-expanded={citedInOpen}
+                                        >
+                                            <span>📖 Cited in{lines.length > 0 ? ` (${lines.length})` : ''}</span>
+                                            <span className={`${styles.citedInChevron} ${citedInOpen ? styles.citedInChevronOpen : ''}`}>›</span>
+                                        </button>
+                                        {citedInOpen && (
+                                            <div className={styles.citedInContent}>
+                                                {lines.map((line, i) => (
+                                                    <div key={i} className={styles.citedInLine}>{line.trim()}</div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })()}
 
                             {/* Cross-links */}
                             {crossLinks.length > 0 && (
