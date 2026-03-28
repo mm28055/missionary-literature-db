@@ -44,7 +44,7 @@ export default async function HomePage() {
           Colonial Discourse<br />& Indian Selfhood
         </h1>
         <p className={styles.heroSubtitle}>
-          Interrogating the texts that shaped how India came to know itself.
+          Interrogating the texts that shaped how India came to know itself
         </p>
         <div className={styles.heroActions}>
           <Link href="/themes" className="btn btn-primary">
