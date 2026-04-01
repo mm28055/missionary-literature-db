@@ -64,15 +64,24 @@ export default function PdfViewer({ pdfUrl, onTextSelected }) {
         const container = scrollContainerRef.current;
         if (!container) return;
 
+        let scrollTimer = null;
         const handleScroll = () => {
             updateVisibleRange();
+            // After scroll settles, re-check one more time
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(() => {
+                updateVisibleRange();
+            }, 150);
         };
 
         container.addEventListener('scroll', handleScroll, { passive: true });
         // Initial calc
         updateVisibleRange();
 
-        return () => container.removeEventListener('scroll', handleScroll);
+        return () => {
+            container.removeEventListener('scroll', handleScroll);
+            clearTimeout(scrollTimer);
+        };
     }, [updateVisibleRange]);
 
     // IntersectionObserver to track which page is currently in view (for page counter)
@@ -119,12 +128,18 @@ export default function PdfViewer({ pdfUrl, onTextSelected }) {
         const pageHeight = EST_PAGE_HEIGHT * pdfScale + 40;
         const container = scrollContainerRef.current;
         if (container) {
+            // Immediately render pages around the target so they're not blank
+            if (numPages) {
+                const start = Math.max(1, pageNum - PAGE_BUFFER);
+                const end = Math.min(numPages, pageNum + PAGE_BUFFER);
+                setVisibleRange({ start, end });
+            }
             container.scrollTo({
                 top: (pageNum - 1) * pageHeight,
                 behavior: 'smooth',
             });
         }
-    }, [pdfScale]);
+    }, [pdfScale, numPages]);
 
     const handleGoToPage = useCallback(() => {
         const val = parseInt(goToPageInput, 10);
