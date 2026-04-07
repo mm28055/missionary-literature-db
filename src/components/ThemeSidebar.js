@@ -22,7 +22,16 @@ export default function ThemeSidebar() {
                 supabase.from('tags').select('id, name, slug').eq('tag_type', 'theme').is('parent_id', null).order('created_at'),
                 supabase.from('tags').select('id, name, slug, parent_id').eq('tag_type', 'theme').not('parent_id', 'is', null).order('created_at'),
             ]);
-            setParentThemes(parents.data || []);
+            // Custom display order: move "Reforming Hindu Society" after "The Brahmin"
+            const pts = parents.data || [];
+            const rIdx = pts.findIndex(t => t.name === 'Reforming Hindu Society');
+            const bIdx = pts.findIndex(t => t.name === 'The Brahmin');
+            if (rIdx !== -1 && bIdx !== -1 && rIdx < bIdx) {
+                const [removed] = pts.splice(rIdx, 1);
+                const newBIdx = pts.findIndex(t => t.name === 'The Brahmin');
+                pts.splice(newBIdx + 1, 0, removed);
+            }
+            setParentThemes(pts);
             setSubThemes(subs.data || []);
         };
         load();

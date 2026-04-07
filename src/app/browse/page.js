@@ -48,7 +48,17 @@ export default function BrowsePage() {
     };
 
     // Organize tags
-    const parentThemes = tags.filter(t => t.tag_type === 'theme' && !t.parent_id);
+    const parentThemes = (() => {
+        const pts = tags.filter(t => t.tag_type === 'theme' && !t.parent_id);
+        const rIdx = pts.findIndex(t => t.name === 'Reforming Hindu Society');
+        const bIdx = pts.findIndex(t => t.name === 'The Brahmin');
+        if (rIdx !== -1 && bIdx !== -1 && rIdx < bIdx) {
+            const [removed] = pts.splice(rIdx, 1);
+            const newBIdx = pts.findIndex(t => t.name === 'The Brahmin');
+            pts.splice(newBIdx + 1, 0, removed);
+        }
+        return pts;
+    })();
     const subThemes = tags.filter(t => t.tag_type === 'theme' && t.parent_id);
     const getSubThemes = (parentId) => subThemes.filter(t => t.parent_id === parentId);
 

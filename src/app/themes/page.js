@@ -86,7 +86,16 @@ export default function ThemesPage() {
         const tags = tagsRes.data || [];
 
         setAllExtracts(extracts);
-        setParentThemes(tags.filter(t => !t.parent_id));
+        // Custom display order: move "Reforming Hindu Society" after "The Brahmin"
+        const parents = tags.filter(t => !t.parent_id);
+        const rIdx = parents.findIndex(t => t.name === 'Reforming Hindu Society');
+        const bIdx = parents.findIndex(t => t.name === 'The Brahmin');
+        if (rIdx !== -1 && bIdx !== -1 && rIdx < bIdx) {
+            const [removed] = parents.splice(rIdx, 1);
+            const newBIdx = parents.findIndex(t => t.name === 'The Brahmin');
+            parents.splice(newBIdx + 1, 0, removed);
+        }
+        setParentThemes(parents);
         setSubThemes(tags.filter(t => t.parent_id));
         setMissionaries(missionariesRes.data || []);
         setDenominations(denomsRes.data || []);
