@@ -432,9 +432,8 @@ export default function ThemesPage() {
                                                             return (
                                                                 <div key={child.id} className={`${styles.themeChildRow} ${isChildSelected ? styles.themeChildRowSelected : ''}`}>
                                                                     <input
-                                                                        type="radio"
+                                                                        type="checkbox"
                                                                         className={styles.themeRadio}
-                                                                        name="themeFilter"
                                                                         checked={isChildSelected}
                                                                         onChange={() => {
                                                                             if (isChildSelected) { setSelectedTheme(null); setSelectedThemeType(null); }
