@@ -8,6 +8,21 @@ import styles from './ThemeSidebar.module.css';
 
 const ROMAN = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ'];
 
+const PARENT_THEME_ORDER = [
+    'Hinduism', 'Caste', 'The Brahmin', 'Reforming Hinduism', 'Classifying Hindus',
+];
+
+const sortParentThemes = (themes) => {
+    return [...themes].sort((a, b) => {
+        const ai = PARENT_THEME_ORDER.indexOf(a.name);
+        const bi = PARENT_THEME_ORDER.indexOf(b.name);
+        if (ai !== -1 && bi !== -1) return ai - bi;
+        if (ai !== -1) return -1;
+        if (bi !== -1) return 1;
+        return 0;
+    });
+};
+
 export default function ThemeSidebar() {
     const [parentThemes, setParentThemes] = useState([]);
     const [subThemes, setSubThemes] = useState([]);
@@ -22,16 +37,7 @@ export default function ThemeSidebar() {
                 supabase.from('tags').select('id, name, slug').eq('tag_type', 'theme').is('parent_id', null).order('created_at'),
                 supabase.from('tags').select('id, name, slug, parent_id').eq('tag_type', 'theme').not('parent_id', 'is', null).order('created_at'),
             ]);
-            // Custom display order: move "Reforming Hindu Society" after "The Brahmin"
-            const pts = parents.data || [];
-            const rIdx = pts.findIndex(t => t.name === 'Reforming Hindu Society');
-            const bIdx = pts.findIndex(t => t.name === 'The Brahmin');
-            if (rIdx !== -1 && bIdx !== -1 && rIdx < bIdx) {
-                const [removed] = pts.splice(rIdx, 1);
-                const newBIdx = pts.findIndex(t => t.name === 'The Brahmin');
-                pts.splice(newBIdx + 1, 0, removed);
-            }
-            setParentThemes(pts);
+            setParentThemes(sortParentThemes(parents.data || []));
             setSubThemes(subs.data || []);
         };
         load();

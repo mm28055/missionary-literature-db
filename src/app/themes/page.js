@@ -18,6 +18,26 @@ const LAYER_STYLE = {
     reform: styles.layerReform,
 };
 
+// Custom display order for parent themes
+const PARENT_THEME_ORDER = [
+    'Hinduism',
+    'Caste',
+    'The Brahmin',
+    'Reforming Hinduism',
+    'Classifying Hindus',
+];
+
+const sortParentThemes = (themes) => {
+    return [...themes].sort((a, b) => {
+        const ai = PARENT_THEME_ORDER.indexOf(a.name);
+        const bi = PARENT_THEME_ORDER.indexOf(b.name);
+        if (ai !== -1 && bi !== -1) return ai - bi;
+        if (ai !== -1) return -1;
+        if (bi !== -1) return 1;
+        return 0;
+    });
+};
+
 const PAGE_SIZE = 10;
 
 export default function ThemesPage() {
@@ -86,16 +106,7 @@ export default function ThemesPage() {
         const tags = tagsRes.data || [];
 
         setAllExtracts(extracts);
-        // Custom display order: move "Reforming Hindu Society" after "The Brahmin"
-        const parents = tags.filter(t => !t.parent_id);
-        const rIdx = parents.findIndex(t => t.name === 'Reforming Hindu Society');
-        const bIdx = parents.findIndex(t => t.name === 'The Brahmin');
-        if (rIdx !== -1 && bIdx !== -1 && rIdx < bIdx) {
-            const [removed] = parents.splice(rIdx, 1);
-            const newBIdx = parents.findIndex(t => t.name === 'The Brahmin');
-            parents.splice(newBIdx + 1, 0, removed);
-        }
-        setParentThemes(parents);
+        setParentThemes(sortParentThemes(tags.filter(t => !t.parent_id)));
         setSubThemes(tags.filter(t => t.parent_id));
         setMissionaries(missionariesRes.data || []);
         setDenominations(denomsRes.data || []);

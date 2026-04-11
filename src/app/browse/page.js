@@ -10,6 +10,21 @@ const LAYER_LABELS = {
     reform: 'Reform / Response',
 };
 
+const PARENT_THEME_ORDER = [
+    'Hinduism', 'Caste', 'The Brahmin', 'Reforming Hinduism', 'Classifying Hindus',
+];
+
+const sortParentThemes = (themes) => {
+    return [...themes].sort((a, b) => {
+        const ai = PARENT_THEME_ORDER.indexOf(a.name);
+        const bi = PARENT_THEME_ORDER.indexOf(b.name);
+        if (ai !== -1 && bi !== -1) return ai - bi;
+        if (ai !== -1) return -1;
+        if (bi !== -1) return 1;
+        return 0;
+    });
+};
+
 export default function BrowsePage() {
     const [extracts, setExtracts] = useState([]);
     const [tags, setTags] = useState([]);
@@ -48,17 +63,7 @@ export default function BrowsePage() {
     };
 
     // Organize tags
-    const parentThemes = (() => {
-        const pts = tags.filter(t => t.tag_type === 'theme' && !t.parent_id);
-        const rIdx = pts.findIndex(t => t.name === 'Reforming Hindu Society');
-        const bIdx = pts.findIndex(t => t.name === 'The Brahmin');
-        if (rIdx !== -1 && bIdx !== -1 && rIdx < bIdx) {
-            const [removed] = pts.splice(rIdx, 1);
-            const newBIdx = pts.findIndex(t => t.name === 'The Brahmin');
-            pts.splice(newBIdx + 1, 0, removed);
-        }
-        return pts;
-    })();
+    const parentThemes = sortParentThemes(tags.filter(t => t.tag_type === 'theme' && !t.parent_id));
     const subThemes = tags.filter(t => t.tag_type === 'theme' && t.parent_id);
     const getSubThemes = (parentId) => subThemes.filter(t => t.parent_id === parentId);
 
